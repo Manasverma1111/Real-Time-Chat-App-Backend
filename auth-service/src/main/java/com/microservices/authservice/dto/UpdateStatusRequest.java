@@ -1,6 +1,6 @@
 package com.microservices.authservice.dto;
 
-import com.connecthub.auth.entity.UserStatus;
+import com.microservices.authservice.entity.UserStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 

@@ -1,5 +1,7 @@
 package com.microservices.authservice.config;
 
+import com.microservices.authservice.security.JwtAuthenticationFilter;
+import com.microservices.authservice.security.OAuth2LoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

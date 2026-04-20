@@ -1,10 +1,13 @@
 package com.microservices.authservice.controller;
 
 import com.microservices.authservice.dto.*;
+import com.microservices.authservice.security.CustomUserDetails;
+import com.microservices.authservice.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Map;
 

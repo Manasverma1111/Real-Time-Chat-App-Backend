@@ -2,7 +2,6 @@ package com.microservices.authservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import com.connecthub.auth.entity.UserStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

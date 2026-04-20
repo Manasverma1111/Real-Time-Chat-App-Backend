@@ -1,7 +1,7 @@
 package com.microservices.authservice.dto;
 
-import com.connecthub.auth.entity.AuthProvider;
-import com.connecthub.auth.entity.UserStatus;
+import com.microservices.authservice.entity.AuthProvider;
+import com.microservices.authservice.entity.UserStatus;
 import lombok.Builder;
 import lombok.Data;
 
