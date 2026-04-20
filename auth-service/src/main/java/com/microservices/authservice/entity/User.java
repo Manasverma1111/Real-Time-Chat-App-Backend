@@ -1,0 +1,68 @@
+package com.microservices.authservice.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import com.connecthub.auth.entity.UserStatus;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class User {
+
+    @Id
+    @GeneratedValue
+    private UUID userId;
+
+    @Column(nullable = false, unique = true, length = 50)
+    private String username;
+
+    @Column(nullable = false, unique = true, length = 100)
+    private String email;
+
+    @Column(nullable = true)
+    private String passwordHash;
+
+    @Column(nullable = false, length = 100)
+    private String fullName;
+
+    private String avatarUrl;
+
+    @Column(length = 250)
+    private String bio;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AuthProvider provider;
+
+    @Column(nullable = false)
+    private Boolean isActive;
+
+    private LocalDateTime lastSeenAt;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = UserStatus.ONLINE;
+        }
+        if (this.provider == null) {
+            this.provider = AuthProvider.LOCAL;
+        }
+        if (this.isActive == null) {
+            this.isActive = true;
+        }
+    }
+}
