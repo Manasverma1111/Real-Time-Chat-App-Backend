@@ -8,7 +8,6 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<!-- Stable version -->
 		<version>3.5.13</version>
 		<relativePath/>
 	</parent>
@@ -19,8 +18,9 @@
 	<name>media-service</name>
 	<description>media-service</description>
 
+	<!-- ✅ FIXED -->
 	<properties>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 	</properties>
 
 	<dependencies>
@@ -60,6 +60,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+			<version>1.18.34</version>
 			<optional>true</optional>
 		</dependency>
 
@@ -81,7 +82,7 @@
 	<build>
 		<plugins>
 
-			<!-- Spring Boot Plugin -->
+			<!-- Spring Boot -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -95,14 +96,12 @@
 				</configuration>
 			</plugin>
 
-			<!-- Compiler Plugin for Java 21 + Lombok -->
+			<!-- Lombok Compiler -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.13.0</version>
 				<configuration>
-					<source>21</source>
-					<target>21</target>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
