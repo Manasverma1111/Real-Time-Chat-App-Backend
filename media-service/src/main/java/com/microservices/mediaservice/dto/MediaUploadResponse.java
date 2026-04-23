@@ -1,14 +1,23 @@
 package com.microservices.mediaservice.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
+//@AllArgsConstructor
 public class MediaUploadResponse {
+
+	public MediaUploadResponse(UUID id, UUID roomId, UUID senderId, String fileName, String fileType, String filePath, LocalDateTime uploadedAt) {
+		this.id = id;
+		this.roomId = roomId;
+		this.senderId = senderId;
+		this.fileName = fileName;
+		this.fileType = fileType;
+		this.filePath = filePath;
+		this.uploadedAt = uploadedAt;
+	}
 
 	// Media file ID
 	private UUID id;

@@ -22,6 +22,62 @@ public class MediaFile {
 	// Chat room reference
 	private UUID roomId;
 
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public UUID getRoomId() {
+		return roomId;
+	}
+
+	public void setRoomId(UUID roomId) {
+		this.roomId = roomId;
+	}
+
+	public UUID getSenderId() {
+		return senderId;
+	}
+
+	public void setSenderId(UUID senderId) {
+		this.senderId = senderId;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getFileType() {
+		return fileType;
+	}
+
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+
+	public LocalDateTime getUploadedAt() {
+		return uploadedAt;
+	}
+
+	public void setUploadedAt(LocalDateTime uploadedAt) {
+		this.uploadedAt = uploadedAt;
+	}
+
 	// Uploader user ID
 	private UUID senderId;
 
