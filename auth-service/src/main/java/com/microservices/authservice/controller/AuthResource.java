@@ -2,7 +2,10 @@ package com.microservices.authservice.controller;
 
 import com.microservices.authservice.dto.*;
 import com.microservices.authservice.security.CustomUserDetails;
+import com.microservices.authservice.security.JwtService;
 import com.microservices.authservice.service.AuthService;
+import com.microservices.authservice.service.TokenBlacklistService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,6 +20,8 @@ import java.util.Map;
 public class AuthResource {
 
 	private final AuthService authService;
+	private final TokenBlacklistService tokenBlacklistService;
+	private final JwtService jwtService;
 
 	@PostMapping("/register")
 	public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
@@ -26,6 +31,24 @@ public class AuthResource {
 	@PostMapping("/login")
 	public AuthResponse login(@Valid @RequestBody LoginRequest request) {
 		return authService.login(request);
+	}
+
+	@PostMapping("/logout")
+	public Map<String, String> logout(HttpServletRequest request) {
+
+		String authHeader = request.getHeader("Authorization");
+
+		if (authHeader != null && authHeader.startsWith("Bearer ")) {
+			String token = authHeader.substring(7);
+
+			long expiry = jwtService.getRemainingValidity(token);
+
+			if (expiry > 0) {
+				tokenBlacklistService.blacklistToken(token, expiry);
+			}
+		}
+
+		return Map.of("message", "Logout successful");
 	}
 
 	@GetMapping("/validate")
