@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -48,6 +49,8 @@ public class RoomServiceImpl implements RoomService {
 	public List<Room> getUserRooms(UUID userId) {
 		List<RoomMember> memberships = roomMemberRepository.findByUserId(userId);
 
-		return memberships.stream().map(m -> roomRepository.findById(m.getRoomId()).orElse(null)).toList();
-	}
+		return memberships.stream()
+				.map(m -> roomRepository.findById(m.getRoomId()).orElse(null))
+				.filter(Objects::nonNull)
+				.toList();	}
 }
