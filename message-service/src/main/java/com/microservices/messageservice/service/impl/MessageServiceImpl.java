@@ -26,12 +26,14 @@ public class MessageServiceImpl implements MessageService {
 		message.setSenderId(userId);
 
 		/*
-		 TEMP SAFE FIX:
-		 Until auth-service user profile API is connected,
-		 we use UUID fallback.
-		 Frontend will send senderName through websocket.
+		 FINAL FIX:
+		 Save actual username instead of UUID/User fallback
 		*/
-		message.setSenderName(userId.toString());
+		message.setSenderName(
+				request.getSenderName() != null && !request.getSenderName().isBlank()
+						? request.getSenderName()
+						: "User"
+		);
 
 		message.setRoomId(request.getRoomId());
 		message.setContent(request.getContent());
@@ -45,6 +47,7 @@ public class MessageServiceImpl implements MessageService {
 		return messageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
 	}
 }
+
 
 
 //package com.microservices.messageservice.service.impl;
@@ -71,10 +74,34 @@ public class MessageServiceImpl implements MessageService {
 //	@Override
 //	public Message sendMessage(UUID userId, CreateMessageRequest request) {
 //		Message message = new Message();
+//
 //		message.setSenderId(userId);
+//
+//		/*
+//		 FINAL SAFE FIX:
+//		 Save readable sender name instead of UUID fallback.
+//
+//		 Since frontend already stores username in sessionStorage
+//		 and sends senderName via WebSocket flow,
+//		 old messages after refresh should also show readable value.
+//
+//		 For REST API fallback:
+//		 if backend user-service lookup is not connected yet,
+//		 we store a cleaner readable fallback instead of raw UUID.
+//		*/
+//
+//		String readableName = "User";
+//
+//		if (request.getContent() != null && !request.getContent().isBlank()) {
+//			readableName = "User";
+//		}
+//
+//		message.setSenderName(readableName);
+//
 //		message.setRoomId(request.getRoomId());
 //		message.setContent(request.getContent());
 //		message.setCreatedAt(LocalDateTime.now());
+//
 //		return messageRepository.save(message);
 //	}
 //

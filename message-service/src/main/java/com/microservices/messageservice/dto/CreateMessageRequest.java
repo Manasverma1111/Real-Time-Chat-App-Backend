@@ -14,4 +14,10 @@ public class CreateMessageRequest {
 
 	@NotBlank
 	private String content;
+
+	/*
+	 FINAL FIX:
+	 Save username for proper message display after refresh
+	*/
+	private String senderName;
 }
