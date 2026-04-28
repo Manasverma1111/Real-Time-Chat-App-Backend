@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -222,6 +223,23 @@ public class AuthServiceImpl implements AuthService {
 				.isActive(updatedUser.getIsActive())
 				.lastSeenAt(updatedUser.getLastSeenAt())
 				.createdAt(updatedUser.getCreatedAt())
+				.build();
+	}
+
+	@Override
+	public UserSearchResponse getUserById(UUID userId) {
+
+		User user = userRepository.findByUserId(userId)
+				.orElseThrow(() ->
+						new RuntimeException("User not found")
+				);
+
+		return UserSearchResponse.builder()
+				.userId(user.getUserId())
+				.username(user.getUsername())
+				.fullName(user.getFullName())
+				.avatarUrl(user.getAvatarUrl())
+				.status(user.getStatus())
 				.build();
 	}
 }

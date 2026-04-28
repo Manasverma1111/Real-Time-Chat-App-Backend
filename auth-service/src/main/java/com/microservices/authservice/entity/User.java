@@ -2,6 +2,9 @@ package com.microservices.authservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,8 +17,14 @@ import java.util.UUID;
 @Builder
 public class User {
 
+//    @Id
+//    @GeneratedValue
+//    private UUID userId;
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @JdbcTypeCode(SqlTypes.CHAR)
+    @Column(name = "user_id", length = 36, nullable = false, updatable = false)
     private UUID userId;
 
     @Column(nullable = false, unique = true, length = 50)

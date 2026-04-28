@@ -3,6 +3,7 @@ package com.microservices.authservice.service;
 import com.microservices.authservice.dto.*;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface AuthService {
 
@@ -21,4 +22,7 @@ public interface AuthService {
 	List<UserSearchResponse> searchUsers(String keyword);
 
 	UserProfileResponse updateStatus(String email, UpdateStatusRequest request);
+
+	UserSearchResponse getUserById(UUID userId);
+
 }

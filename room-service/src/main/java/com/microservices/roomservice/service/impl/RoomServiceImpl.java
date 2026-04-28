@@ -1,6 +1,7 @@
 package com.microservices.roomservice.service.impl;
 
 import com.microservices.roomservice.dto.CreateRoomRequest;
+import com.microservices.roomservice.dto.RoomMemberResponse;
 import com.microservices.roomservice.entity.Room;
 import com.microservices.roomservice.entity.RoomMember;
 import com.microservices.roomservice.repository.RoomMemberRepository;
@@ -9,8 +10,10 @@ import com.microservices.roomservice.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -20,6 +23,7 @@ public class RoomServiceImpl implements RoomService {
 
 	private final RoomRepository roomRepository;
 	private final RoomMemberRepository roomMemberRepository;
+	private final RestTemplate restTemplate;
 
 	@Override
 	public Room createRoom(UUID creatorId, CreateRoomRequest request) {
@@ -68,10 +72,36 @@ public class RoomServiceImpl implements RoomService {
 				.toList();
 	}
 
+//	@Override
+//	public List<RoomMember> getRoomMembers(UUID roomId, UUID userId) {
+//		validateMembership(roomId, userId);
+//		return roomMemberRepository.findByRoomId(roomId);
+//	}
+
 	@Override
-	public List<RoomMember> getRoomMembers(UUID roomId, UUID userId) {
+	public List<RoomMemberResponse> getRoomMembers(UUID roomId, UUID userId) {
 		validateMembership(roomId, userId);
-		return roomMemberRepository.findByRoomId(roomId);
+
+		List<RoomMember> members = roomMemberRepository.findByRoomId(roomId);
+
+		return members.stream()
+				.map(member -> {
+					String url = "http://localhost:8081/auth/user/" + member.getUserId();
+
+					Map<String, Object> user =
+							restTemplate.getForObject(url, Map.class);
+
+					String username = user != null
+							? String.valueOf(user.get("username"))
+							: "Unknown User";
+
+					return RoomMemberResponse.builder()
+							.userId(member.getUserId())
+							.username(username)
+							.role(member.getRole())
+							.build();
+				})
+				.toList();
 	}
 
 	@Override

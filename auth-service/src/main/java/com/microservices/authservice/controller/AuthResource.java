@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -79,9 +80,21 @@ public class AuthResource {
 		return authService.searchUsers(keyword);
 	}
 
+	/*
+FETCH USER BY ID
+USED BY ROOM SERVICE TO SHOW USERNAME IN MEMBERS MODAL
+*/
+	@GetMapping("/user/{userId}")
+	public UserSearchResponse getUserById(
+			@PathVariable UUID userId
+	) {
+		return authService.getUserById(userId);
+	}
+
 	@PutMapping("/status")
 	public UserProfileResponse updateStatus(@AuthenticationPrincipal CustomUserDetails userDetails,
 			@Valid @RequestBody UpdateStatusRequest request) {
 		return authService.updateStatus(userDetails.getUsername(), request);
 	}
+
 }
