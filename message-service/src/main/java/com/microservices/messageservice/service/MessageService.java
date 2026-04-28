@@ -10,4 +10,6 @@ public interface MessageService {
 	Message sendMessage(UUID userId, CreateMessageRequest request);
 
 	List<Message> getMessagesByRoom(UUID roomId);
+
+	void markMessagesAsSeen(UUID roomId, UUID currentUserId);
 }

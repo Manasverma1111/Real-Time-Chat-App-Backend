@@ -33,4 +33,21 @@ public class MessageController {
 	public List<Message> getMessagesByRoom(@RequestParam UUID roomId) {
 		return messageService.getMessagesByRoom(roomId);
 	}
+
+	/*
+	 NEW
+	*/
+	@PutMapping("/{roomId}/seen")
+	public void markMessagesSeen(
+			@PathVariable UUID roomId,
+			@RequestHeader("Authorization") String authHeader
+	) {
+		String token = authHeader.substring(7);
+		String userId = jwtService.extractUserId(token);
+
+		messageService.markMessagesAsSeen(
+				roomId,
+				UUID.fromString(userId)
+		);
+	}
 }
