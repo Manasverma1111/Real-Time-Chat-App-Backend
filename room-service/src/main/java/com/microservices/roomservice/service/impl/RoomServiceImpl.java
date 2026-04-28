@@ -67,16 +67,37 @@ public class RoomServiceImpl implements RoomService {
 		List<RoomMember> memberships = roomMemberRepository.findByUserId(userId);
 
 		return memberships.stream()
-				.map(m -> roomRepository.findById(m.getRoomId()).orElse(null))
+				.map(membership -> {
+					Room room = roomRepository
+							.findById(membership.getRoomId())
+							.orElse(null);
+
+					if (room == null) {
+						return null;
+					}
+
+					/*
+					 NEW:
+					 Set member count + online count
+					 without changing DB structure
+					*/
+					int memberCount = roomMemberRepository
+							.findByRoomId(room.getRoomId())
+							.size();
+
+					room.setMemberCount(memberCount);
+
+					/*
+					 Presence service not connected yet,
+					 so keep online count as 0 for now
+					*/
+					room.setOnlineCount(0);
+
+					return room;
+				})
 				.filter(Objects::nonNull)
 				.toList();
 	}
-
-//	@Override
-//	public List<RoomMember> getRoomMembers(UUID roomId, UUID userId) {
-//		validateMembership(roomId, userId);
-//		return roomMemberRepository.findByRoomId(roomId);
-//	}
 
 	@Override
 	public List<RoomMemberResponse> getRoomMembers(UUID roomId, UUID userId) {

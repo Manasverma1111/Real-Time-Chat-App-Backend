@@ -28,6 +28,12 @@ public class Room {
     @Column(nullable = false)
     private UUID createdBy;
 
+    @Transient
+    private Integer memberCount;
+
+    @Transient
+    private Integer onlineCount;
+
     private LocalDateTime createdAt;
 
     @PrePersist
