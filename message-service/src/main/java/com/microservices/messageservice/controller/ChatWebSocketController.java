@@ -2,6 +2,7 @@ package com.microservices.messageservice.controller;
 
 import com.microservices.messageservice.dto.ChatMessage;
 import com.microservices.messageservice.dto.CreateMessageRequest;
+import com.microservices.messageservice.dto.TypingEvent;
 import com.microservices.messageservice.entity.Message;
 import com.microservices.messageservice.service.MessageService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -50,6 +51,17 @@ public class ChatWebSocketController {
         messagingTemplate.convertAndSend(
                 "/topic/room/" + chatMessage.getRoomId(),
                 savedMessage
+        );
+    }
+
+    /*
+     TYPING INDICATOR
+    */
+    @MessageMapping("/chat.typing")
+    public void typing(TypingEvent typingEvent) {
+        messagingTemplate.convertAndSend(
+                "/topic/typing/" + typingEvent.getRoomId(),
+                typingEvent
         );
     }
 }
