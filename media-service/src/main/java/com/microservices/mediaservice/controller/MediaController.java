@@ -35,4 +35,12 @@ public class MediaController {
 	public List<MediaFile> getMediaByRoom(@PathVariable UUID roomId) {
 		return mediaService.getMediaByRoom(roomId);
 	}
+
+	@PostMapping("/upload/profile")
+	public MediaUploadResponse uploadProfileImage(
+			@RequestParam UUID userId,
+			@RequestParam("file") MultipartFile file
+	) {
+		return mediaService.uploadFile(null, userId, file);
+	}
 }
