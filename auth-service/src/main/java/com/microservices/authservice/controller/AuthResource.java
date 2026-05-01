@@ -100,8 +100,8 @@ USED BY ROOM SERVICE TO SHOW USERNAME IN MEMBERS MODAL
 
 	@PreAuthorize("hasRole('SUPER_ADMIN')")
 	@GetMapping("/super-admin/users")
-	public List<UserSearchResponse> getAllUsers() {
-		return authService.searchUsers(""); // simple reuse
+	public List<UserProfileResponse> getAllUsers() {
+		return authService.getAllUsersForAdmin(); // ✅ FIXED
 	}
 
 	@PreAuthorize("hasRole('SUPER_ADMIN')")

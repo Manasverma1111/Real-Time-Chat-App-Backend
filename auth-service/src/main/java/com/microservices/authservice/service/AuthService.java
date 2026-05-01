@@ -27,4 +27,6 @@ public interface AuthService {
 
 	void deleteUser(UUID userId);
 
+	List<UserProfileResponse> getAllUsersForAdmin();
+
 }

@@ -256,6 +256,28 @@ public class AuthServiceImpl implements AuthService {
 
 		userRepository.delete(user); // simple hard delete (safe for now)
 	}
+
+	// ✅ NEW: Used ONLY for SUPER_ADMIN dashboard (includes role)
+	@Override
+	public List<UserProfileResponse> getAllUsersForAdmin() {
+		return userRepository.findAll()
+				.stream()
+				.map(user -> UserProfileResponse.builder()
+						.userId(user.getUserId())
+						.username(user.getUsername())
+						.email(user.getEmail())
+						.fullName(user.getFullName())
+						.avatarUrl(user.getAvatarUrl())
+						.bio(user.getBio())
+						.status(user.getStatus())
+						.provider(user.getProvider())
+						.isActive(user.getIsActive())
+						.lastSeenAt(user.getLastSeenAt())
+						.createdAt(user.getCreatedAt())
+						.role(user.getRole().name()) // ✅ CRITICAL FIX
+						.build())
+				.toList();
+	}
 }
 
 
