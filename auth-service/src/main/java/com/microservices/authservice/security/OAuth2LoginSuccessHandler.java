@@ -53,7 +53,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 		String token = jwtService.generateToken(
 				user.getUserId(),
-				user.getEmail()
+				user.getEmail(),
+				user.getRole().name()
 		);
 
 		// Redirect to Angular frontend

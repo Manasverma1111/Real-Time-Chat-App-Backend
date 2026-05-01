@@ -20,8 +20,8 @@ public class JwtService {
 
 	private static final String SECRET_KEY = "connecthubsupersecretkeyconnecthubsupersecretkey1234567890abcd";
 
-	public String generateToken(UUID userId, String email) {
-		return Jwts.builder().setSubject(email).claim("userId", userId.toString()).setIssuedAt(new Date())
+	public String generateToken(UUID userId, String email, String role) {
+		return Jwts.builder().setSubject(email).claim("userId", userId.toString()).claim("role", role).setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
 				.signWith(getSignInKey(), SignatureAlgorithm.HS256).compact();
 	}

@@ -8,6 +8,7 @@ import com.microservices.authservice.service.TokenBlacklistService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,6 +96,19 @@ USED BY ROOM SERVICE TO SHOW USERNAME IN MEMBERS MODAL
 	public UserProfileResponse updateStatus(@AuthenticationPrincipal CustomUserDetails userDetails,
 			@Valid @RequestBody UpdateStatusRequest request) {
 		return authService.updateStatus(userDetails.getUsername(), request);
+	}
+
+	@PreAuthorize("hasRole('SUPER_ADMIN')")
+	@GetMapping("/super-admin/users")
+	public List<UserSearchResponse> getAllUsers() {
+		return authService.searchUsers(""); // simple reuse
+	}
+
+	@PreAuthorize("hasRole('SUPER_ADMIN')")
+	@DeleteMapping("/super-admin/user/{userId}")
+	public Map<String, String> deleteUser(@PathVariable UUID userId) {
+		authService.deleteUser(userId);
+		return Map.of("message", "User deleted successfully");
 	}
 
 }

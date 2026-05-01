@@ -48,7 +48,8 @@ public class AuthServiceImpl implements AuthService {
 
 		String token = jwtService.generateToken(
 				savedUser.getUserId(),
-				savedUser.getEmail()
+				savedUser.getEmail(),
+				savedUser.getRole().name()
 		);
 
 		return AuthResponse.builder()
@@ -57,6 +58,7 @@ public class AuthServiceImpl implements AuthService {
 				.username(savedUser.getUsername())
 				.email(savedUser.getEmail())
 				.fullName(savedUser.getFullName())
+				.role(savedUser.getRole().name())
 				.build();
 	}
 
@@ -83,7 +85,8 @@ public class AuthServiceImpl implements AuthService {
 
 		String token = jwtService.generateToken(
 				user.getUserId(),
-				user.getEmail()
+				user.getEmail(),
+				user.getRole().name()
 		);
 
 		return AuthResponse.builder()
@@ -93,6 +96,7 @@ public class AuthServiceImpl implements AuthService {
 				.email(user.getEmail())
 				.fullName(user.getFullName())
 				.avatarUrl(user.getAvatarUrl())
+				.role(user.getRole().name())
 				.build();
 	}
 
@@ -121,6 +125,7 @@ public class AuthServiceImpl implements AuthService {
 				.isActive(user.getIsActive())
 				.lastSeenAt(user.getLastSeenAt())
 				.createdAt(user.getCreatedAt())
+				.role(user.getRole().name())
 				.build();
 	}
 
@@ -242,6 +247,14 @@ public class AuthServiceImpl implements AuthService {
 				.avatarUrl(user.getAvatarUrl())
 				.status(user.getStatus())
 				.build();
+	}
+
+	@Override
+	public void deleteUser(UUID userId) {
+		User user = userRepository.findByUserId(userId)
+				.orElseThrow(() -> new RuntimeException("User not found"));
+
+		userRepository.delete(user); // simple hard delete (safe for now)
 	}
 }
 

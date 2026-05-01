@@ -22,4 +22,5 @@ public class UserProfileResponse {
 	private Boolean isActive;
 	private LocalDateTime lastSeenAt;
 	private LocalDateTime createdAt;
+	private String role;
 }

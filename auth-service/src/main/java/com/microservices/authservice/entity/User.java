@@ -60,6 +60,11 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+//    Add a role field to manage ADMIN/USER permissions and access levels
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GlobalRole role;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
@@ -71,6 +76,10 @@ public class User {
         }
         if (this.isActive == null) {
             this.isActive = true;
+        }
+
+        if (this.role == null) {
+            this.role = GlobalRole.USER;
         }
     }
 }

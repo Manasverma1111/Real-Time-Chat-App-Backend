@@ -25,4 +25,6 @@ public interface AuthService {
 
 	UserSearchResponse getUserById(UUID userId);
 
+	void deleteUser(UUID userId);
+
 }
