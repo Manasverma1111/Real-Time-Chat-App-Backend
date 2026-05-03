@@ -83,7 +83,7 @@ public class AuthResource {
 
 	@PutMapping("/password")
 	public Map<String, String> changePassword(@AuthenticationPrincipal CustomUserDetails userDetails,
-			@Valid @RequestBody ChangePasswordRequest request) {
+											  @Valid @RequestBody ChangePasswordRequest request) {
 		authService.changePassword(userDetails.getUsername(), request);
 		return Map.of("message", "Password changed successfully");
 	}
@@ -106,7 +106,7 @@ USED BY ROOM SERVICE TO SHOW USERNAME IN MEMBERS MODAL
 
 	@PutMapping("/status")
 	public UserProfileResponse updateStatus(@AuthenticationPrincipal CustomUserDetails userDetails,
-			@Valid @RequestBody UpdateStatusRequest request) {
+											@Valid @RequestBody UpdateStatusRequest request) {
 		return authService.updateStatus(userDetails.getUsername(), request);
 	}
 
