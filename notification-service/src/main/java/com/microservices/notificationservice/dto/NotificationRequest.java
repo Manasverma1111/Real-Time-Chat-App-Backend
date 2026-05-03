@@ -6,7 +6,8 @@ import java.util.UUID;
 
 @Data
 public class NotificationRequest {
-    private UUID userId;
+
+    private UUID userId;   // ✅ matches controller & service
     private String type;
     private String message;
 }

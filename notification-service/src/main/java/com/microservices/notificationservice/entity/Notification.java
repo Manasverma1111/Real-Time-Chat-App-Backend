@@ -21,6 +21,7 @@ public class Notification {
 
 	private String message;
 
+	@Column(name = "is_read")
 	private boolean isRead;
 
 	private LocalDateTime createdAt;
