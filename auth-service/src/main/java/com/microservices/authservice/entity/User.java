@@ -69,7 +69,7 @@ public class User {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         if (this.status == null) {
-            this.status = UserStatus.ONLINE;
+            this.status = UserStatus.OFFLINE;
         }
         if (this.provider == null) {
             this.provider = AuthProvider.LOCAL;

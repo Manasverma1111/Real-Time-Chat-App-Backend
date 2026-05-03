@@ -1,6 +1,7 @@
 package com.microservices.authservice.controller;
 
 import com.microservices.authservice.dto.*;
+import com.microservices.authservice.entity.UserStatus;
 import com.microservices.authservice.security.CustomUserDetails;
 import com.microservices.authservice.security.JwtService;
 import com.microservices.authservice.service.AuthService;
@@ -36,7 +37,7 @@ public class AuthResource {
 	}
 
 	@PostMapping("/logout")
-	public Map<String, String> logout(HttpServletRequest request) {
+	public Map<String, String> logout(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
 		String authHeader = request.getHeader("Authorization");
 
@@ -48,6 +49,17 @@ public class AuthResource {
 			if (expiry > 0) {
 				tokenBlacklistService.blacklistToken(token, expiry);
 			}
+		}
+
+		// ✅ SET USER OFFLINE
+		if (userDetails != null) {
+			UpdateStatusRequest req = new UpdateStatusRequest();
+			req.setStatus(UserStatus.OFFLINE);
+
+			authService.updateStatus(
+					userDetails.getUsername(),
+					req
+			);
 		}
 
 		return Map.of("message", "Logout successful");
