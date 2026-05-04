@@ -162,6 +162,7 @@ public class AuthServiceImpl implements AuthService {
 				.isActive(updatedUser.getIsActive())
 				.lastSeenAt(updatedUser.getLastSeenAt())
 				.createdAt(updatedUser.getCreatedAt())
+				.role(updatedUser.getRole().name()) // ✅ ADD THIS
 				.build();
 	}
 
