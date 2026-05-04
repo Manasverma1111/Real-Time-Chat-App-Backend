@@ -30,8 +30,17 @@ public class MessageController {
 	}
 
 	@GetMapping
-	public List<Message> getMessagesByRoom(@RequestParam UUID roomId) {
-		return messageService.getMessagesByRoom(roomId);
+	public List<Message> getMessagesByRoom(
+			@RequestParam UUID roomId,
+			@RequestHeader("Authorization") String authHeader
+	) {
+		String token = authHeader.substring(7);
+		String userId = jwtService.extractUserId(token);
+
+		return messageService.getMessagesByRoom(
+				roomId,
+				UUID.fromString(userId)
+		);
 	}
 
 	/*
@@ -47,6 +56,20 @@ public class MessageController {
 
 		messageService.markMessagesAsSeen(
 				roomId,
+				UUID.fromString(userId)
+		);
+	}
+
+	@PutMapping("/{messageId}/delete/me")
+	public void deleteMessageForMe(
+			@PathVariable UUID messageId,
+			@RequestHeader("Authorization") String authHeader
+	) {
+		String token = authHeader.substring(7);
+		String userId = jwtService.extractUserId(token);
+
+		messageService.deleteMessageForMe(
+				messageId,
 				UUID.fromString(userId)
 		);
 	}

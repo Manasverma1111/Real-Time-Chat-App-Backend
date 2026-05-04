@@ -31,4 +31,10 @@ public class Message {
 	 true = double tick
 	*/
 	private Boolean seen = false;
+
+	/*
+	 NEW FIELD FOR DELETE FOR ME
+	*/
+	@ElementCollection
+	private java.util.Set<UUID> deletedForUsers = new java.util.HashSet<>();
 }

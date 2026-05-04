@@ -73,8 +73,18 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public List<Message> getMessagesByRoom(UUID roomId) {
-		return messageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+	public List<Message> getMessagesByRoom(UUID roomId, UUID currentUserId) {
+
+		List<Message> messages =
+				messageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+
+		return messages.stream()
+				.filter(message -> {
+					if (message.getDeletedForUsers() == null) return true;
+
+					return !message.getDeletedForUsers().contains(currentUserId);
+				})
+				.toList();
 	}
 
 	@Override
@@ -94,5 +104,16 @@ public class MessageServiceImpl implements MessageService {
 		}
 
 		messageRepository.saveAll(messages);
+	}
+
+	@Override
+	public void deleteMessageForMe(UUID messageId, UUID userId) {
+
+		Message message = messageRepository.findById(messageId)
+				.orElseThrow(() -> new RuntimeException("Message not found"));
+
+		message.getDeletedForUsers().add(userId);
+
+		messageRepository.save(message);
 	}
 }
