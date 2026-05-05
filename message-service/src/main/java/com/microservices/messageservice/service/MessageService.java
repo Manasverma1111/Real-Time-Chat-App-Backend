@@ -14,4 +14,6 @@ public interface MessageService {
 	void markMessagesAsSeen(UUID roomId, UUID currentUserId);
 
 	void deleteMessageForMe(UUID messageId, UUID userId);
+
+	void toggleReaction(UUID messageId, UUID userId, String emoji);
 }

@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -37,4 +40,10 @@ public class Message {
 	*/
 	@ElementCollection
 	private java.util.Set<UUID> deletedForUsers = new java.util.HashSet<>();
+
+	@ElementCollection
+	@CollectionTable(name = "message_reactions", joinColumns = @JoinColumn(name = "message_id"))
+	@MapKeyColumn(name = "emoji")
+	@Column(name = "user_id")
+	private Map<String, Set<UUID>> reactions = new HashMap<>();
 }

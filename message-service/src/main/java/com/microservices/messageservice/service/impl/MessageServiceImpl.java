@@ -116,4 +116,41 @@ public class MessageServiceImpl implements MessageService {
 
 		messageRepository.save(message);
 	}
+
+	@Override
+	public void toggleReaction(UUID messageId, UUID userId, String emoji) {
+
+		Message message = messageRepository.findById(messageId)
+				.orElseThrow(() -> new RuntimeException("Message not found"));
+
+		if (message.getReactions() == null) {
+			message.setReactions(new java.util.HashMap<>());
+		}
+
+		// ❗ REMOVE user from ALL existing reactions first
+		for (var entry : message.getReactions().entrySet()) {
+			entry.getValue().remove(userId);
+		}
+
+		// ❗ CLEAN EMPTY REACTIONS
+		message.getReactions().entrySet().removeIf(e -> e.getValue().isEmpty());
+
+		// ❗ TOGGLE current emoji
+		java.util.Set<UUID> users =
+				message.getReactions().getOrDefault(emoji, new java.util.HashSet<>());
+
+		if (users.contains(userId)) {
+			users.remove(userId);
+		} else {
+			users.add(userId);
+		}
+
+		if (users.isEmpty()) {
+			message.getReactions().remove(emoji);
+		} else {
+			message.getReactions().put(emoji, users);
+		}
+
+		messageRepository.save(message);
+	}
 }

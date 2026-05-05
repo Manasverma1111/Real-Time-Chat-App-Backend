@@ -73,4 +73,20 @@ public class MessageController {
 				UUID.fromString(userId)
 		);
 	}
+
+	@PutMapping("/{messageId}/react")
+	public void reactToMessage(
+			@PathVariable UUID messageId,
+			@RequestParam String emoji,
+			@RequestHeader("Authorization") String authHeader
+	) {
+		String token = authHeader.substring(7);
+		String userId = jwtService.extractUserId(token);
+
+		messageService.toggleReaction(
+				messageId,
+				UUID.fromString(userId),
+				emoji
+		);
+	}
 }
