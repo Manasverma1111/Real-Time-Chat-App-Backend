@@ -6,7 +6,6 @@ import com.microservices.messageservice.dto.CreateMessageRequest;
 import com.microservices.messageservice.entity.Message;
 import com.microservices.messageservice.repository.MessageRepository;
 import com.microservices.messageservice.service.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,11 +17,14 @@ public class MessageServiceImpl implements MessageService {
 
 	private final MessageRepository messageRepository;
 
-	@Autowired
-	private NotificationProducer notificationProducer;
+	private final NotificationProducer notificationProducer;
 
-	public MessageServiceImpl(MessageRepository messageRepository) {
+	public MessageServiceImpl(
+			MessageRepository messageRepository,
+			NotificationProducer notificationProducer
+	) {
 		this.messageRepository = messageRepository;
+		this.notificationProducer = notificationProducer;
 	}
 
 	@Override
@@ -127,27 +129,48 @@ public class MessageServiceImpl implements MessageService {
 			message.setReactions(new java.util.HashMap<>());
 		}
 
-		// ❗ REMOVE user from ALL existing reactions first
-		for (var entry : message.getReactions().entrySet()) {
-			entry.getValue().remove(userId);
-		}
+    /*
+     CASE 1:
+     User already reacted with SAME emoji
+     -> remove reaction completely
+    */
+		if (message.getReactions().containsKey(emoji)
+				&& message.getReactions().get(emoji).contains(userId)) {
 
-		// ❗ CLEAN EMPTY REACTIONS
-		message.getReactions().entrySet().removeIf(e -> e.getValue().isEmpty());
+			message.getReactions().get(emoji).remove(userId);
 
-		// ❗ TOGGLE current emoji
-		java.util.Set<UUID> users =
-				message.getReactions().getOrDefault(emoji, new java.util.HashSet<>());
+			if (message.getReactions().get(emoji).isEmpty()) {
+				message.getReactions().remove(emoji);
+			}
 
-		if (users.contains(userId)) {
-			users.remove(userId);
 		} else {
+
+        /*
+         CASE 2:
+         Remove old reactions first
+        */
+			for (var entry : message.getReactions().entrySet()) {
+				entry.getValue().remove(userId);
+			}
+
+        /*
+         CLEAN EMPTY REACTIONS
+        */
+			message.getReactions().entrySet()
+					.removeIf(e -> e.getValue().isEmpty());
+
+        /*
+         ADD NEW REACTION
+        */
+			java.util.Set<UUID> users =
+					message.getReactions()
+							.getOrDefault(
+									emoji,
+									new java.util.HashSet<>()
+							);
+
 			users.add(userId);
-		}
 
-		if (users.isEmpty()) {
-			message.getReactions().remove(emoji);
-		} else {
 			message.getReactions().put(emoji, users);
 		}
 
