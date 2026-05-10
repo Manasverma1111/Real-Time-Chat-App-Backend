@@ -7,6 +7,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 import java.security.Principal;
@@ -21,11 +22,13 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
 
 	@Override
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
+
+		// ✅ wrap() to read headers — then we rebuild the message at the end
 		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+		accessor.setLeaveMutable(true);
 
 		if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 			List<String> headers = accessor.getNativeHeader("Authorization");
-			System.out.println("CONNECT Authorization headers = " + headers);
 
 			if (headers != null && !headers.isEmpty()) {
 				String authHeader = headers.get(0);
@@ -44,6 +47,7 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
 					System.out.println("WebSocket user set = " + userId);
 				}
 			}
+
 		} else {
 			if (accessor.getUser() == null) {
 				Map<String, Object> sessionAttributes = accessor.getSessionAttributes();
@@ -57,7 +61,8 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
 			}
 		}
 
-		return message;
+		// ✅ always return a NEW message built from the mutated accessor
+		return MessageBuilder.createMessage(message.getPayload(), accessor.getMessageHeaders());
 	}
 
 	private static class StompPrincipal implements Principal {
