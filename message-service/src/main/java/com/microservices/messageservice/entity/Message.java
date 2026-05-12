@@ -24,6 +24,14 @@ public class Message {
 	private String senderName;
 
 	private UUID roomId;
+	/*
+ SUPPORT:
+ - long S3 URLs
+ - signed URLs
+ - large messages
+ - future media metadata
+*/
+	@Column(columnDefinition = "TEXT")
 	private String content;
 	private LocalDateTime createdAt;
 
