@@ -4,17 +4,19 @@ import com.microservices.mediaservice.dto.MediaUploadResponse;
 import com.microservices.mediaservice.entity.MediaFile;
 import com.microservices.mediaservice.repository.MediaFileRepository;
 import com.microservices.mediaservice.service.MediaService;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import software.amazon.awssdk.core.sync.RequestBody;
-
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +27,8 @@ public class MediaServiceImpl implements MediaService {
 	private final MediaFileRepository mediaFileRepository;
 	private final S3Client s3Client;
 
+	private final S3Presigner s3Presigner;
+
 	@Value("${aws.s3.bucket-name}")
 	private String bucketName;
 
@@ -33,10 +37,12 @@ public class MediaServiceImpl implements MediaService {
 
 	public MediaServiceImpl(
 			MediaFileRepository mediaFileRepository,
-			S3Client s3Client
+			S3Client s3Client,
+			S3Presigner s3Presigner
 	) {
 		this.mediaFileRepository = mediaFileRepository;
 		this.s3Client = s3Client;
+		this.s3Presigner = s3Presigner;
 	}
 
 	@Override
@@ -115,5 +121,28 @@ public class MediaServiceImpl implements MediaService {
 
 		return mediaFileRepository
 				.findByRoomIdOrderByUploadedAtDesc(roomId);
+	}
+
+	@Override
+	public String generatePresignedUrl(String fileName) {
+
+		GetObjectRequest getObjectRequest =
+				GetObjectRequest.builder()
+						.bucket(bucketName)
+						.key(fileName)
+						.build();
+
+		GetObjectPresignRequest presignRequest =
+				GetObjectPresignRequest.builder()
+						.signatureDuration(Duration.ofMinutes(30))
+						.getObjectRequest(getObjectRequest)
+						.build();
+
+		PresignedGetObjectRequest presignedRequest =
+				s3Presigner.presignGetObject(
+						presignRequest
+				);
+
+		return presignedRequest.url().toString();
 	}
 }

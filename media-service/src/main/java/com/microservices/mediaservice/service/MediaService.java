@@ -11,8 +11,13 @@ import java.util.UUID;
 public interface MediaService {
 
 	// Upload file and return metadata response
-	MediaUploadResponse uploadFile(UUID roomId, UUID senderId, MultipartFile file);
+	MediaUploadResponse uploadFile(
+			UUID roomId,
+			UUID senderId,
+			MultipartFile file
+	);
 
-	// Fetch media files for a room
 	List<MediaFile> getMediaByRoom(UUID roomId);
+
+	String generatePresignedUrl(String fileName);
 }

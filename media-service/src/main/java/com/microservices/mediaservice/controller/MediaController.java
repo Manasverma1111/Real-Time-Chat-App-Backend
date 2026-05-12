@@ -36,6 +36,16 @@ public class MediaController {
 		return mediaService.getMediaByRoom(roomId);
 	}
 
+	@GetMapping("/preview")
+	public String generatePreviewUrl(
+			@RequestParam String fileName
+	) {
+
+		return mediaService.generatePresignedUrl(
+				fileName
+		);
+	}
+
 	@PostMapping("/upload/profile")
 	public MediaUploadResponse uploadProfileImage(
 			@RequestParam UUID userId,

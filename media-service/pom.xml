@@ -87,7 +87,7 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- AWS S3 -->
+		<!-- AWS S3, S3 Presigner -->
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>s3</artifactId>
