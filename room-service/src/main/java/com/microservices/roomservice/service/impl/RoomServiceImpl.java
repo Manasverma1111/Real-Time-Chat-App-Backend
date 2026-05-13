@@ -31,6 +31,13 @@ public class RoomServiceImpl implements RoomService {
 		Room room = Room.builder()
 				.name(request.getName())
 				.type(request.getType())
+				.visibility(
+						request.getVisibility() != null &&
+								!request.getVisibility().isBlank()
+								? request.getVisibility()
+								: "PRIVATE"
+				)
+				.description(request.getDescription())
 				.createdBy(creatorId)
 				.build();
 
@@ -115,6 +122,98 @@ public class RoomServiceImpl implements RoomService {
 				})
 				.filter(Objects::nonNull)
 				.toList();
+	}
+
+	@Override
+	public List<Room> getPublicGroups(UUID currentUserId) {
+
+		List<Room> publicGroups =
+				roomRepository.findByTypeAndVisibility(
+						"GROUP",
+						"PUBLIC"
+				);
+
+		return publicGroups.stream()
+				.filter(room ->
+						!roomMemberRepository.existsByRoomIdAndUserId(
+								room.getRoomId(),
+								currentUserId
+						)
+				)
+				.map(room -> {
+
+					List<RoomMember> members =
+							roomMemberRepository.findByRoomId(room.getRoomId());
+
+					room.setMemberCount(members.size());
+
+					int onlineCount = 0;
+
+					for (RoomMember member : members) {
+
+						try {
+
+							String url =
+									"http://localhost:8084/presence/" + member.getUserId();
+
+							Map<String, Object> response =
+									restTemplate.getForObject(url, Map.class);
+
+							if (
+									response != null &&
+											"ONLINE".equals(
+													String.valueOf(response.get("status"))
+											)
+							) {
+								onlineCount++;
+							}
+
+						} catch (Exception ignored) {
+						}
+					}
+
+					room.setOnlineCount(onlineCount);
+
+					return room;
+				})
+				.toList();
+	}
+
+	@Override
+	public void joinPublicGroup(UUID roomId, UUID userId) {
+
+		Room room = roomRepository.findById(roomId)
+				.orElseThrow(() ->
+						new RuntimeException("Room not found"));
+
+    /*
+     Only GROUP rooms are joinable
+    */
+		if (!"GROUP".equals(room.getType())) {
+			throw new RuntimeException("Only groups are joinable");
+		}
+
+    /*
+     Only PUBLIC groups are directly joinable
+    */
+		if (!"PUBLIC".equals(room.getVisibility())) {
+			throw new RuntimeException("This group is private");
+		}
+
+    /*
+     Prevent duplicate joins
+    */
+		if (roomMemberRepository.existsByRoomIdAndUserId(roomId, userId)) {
+			return;
+		}
+
+		RoomMember member = RoomMember.builder()
+				.roomId(roomId)
+				.userId(userId)
+				.role("MEMBER")
+				.build();
+
+		roomMemberRepository.save(member);
 	}
 
 	@Override

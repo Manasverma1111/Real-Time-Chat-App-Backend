@@ -22,8 +22,29 @@ public class Room {
     @Column(nullable = false)
     private String name;
 
+    /*
+     ROOM TYPE:
+     GROUP / DM
+    */
     @Column(nullable = false)
-    private String type; // GROUP or DM
+    private String type;
+
+    /*
+     GROUP VISIBILITY:
+     PUBLIC / PRIVATE
+
+     IMPORTANT:
+     Default PRIVATE to preserve old behavior
+    */
+    @Column(nullable = false)
+    @Builder.Default
+    private String visibility = "PRIVATE";
+
+    /*
+     OPTIONAL GROUP DESCRIPTION
+    */
+    @Column(length = 300)
+    private String description;
 
     @Column(nullable = false)
     private UUID createdBy;
@@ -39,5 +60,12 @@ public class Room {
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
+
+        /*
+         Safety fallback for old room creation flow
+        */
+        if (this.visibility == null || this.visibility.isBlank()) {
+            this.visibility = "PRIVATE";
+        }
     }
 }

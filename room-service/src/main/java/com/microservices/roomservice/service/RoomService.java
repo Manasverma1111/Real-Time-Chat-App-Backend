@@ -22,4 +22,8 @@ public interface RoomService {
 	void leaveRoom(UUID roomId, UUID userId);
 
 	void deleteRoom(UUID roomId, UUID requesterId);
+
+	List<Room> getPublicGroups(UUID currentUserId);
+
+	void joinPublicGroup(UUID roomId, UUID userId);
 }

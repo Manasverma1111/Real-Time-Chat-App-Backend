@@ -12,8 +12,23 @@ public class CreateRoomRequest {
 	@NotBlank
 	private String name;
 
+	/*
+     GROUP / DM
+    */
 	@NotBlank
-	private String type; // GROUP / DM
+	private String type;
+
+	/*
+     PUBLIC / PRIVATE
+
+     Optional to preserve backward compatibility
+    */
+	private String visibility;
+
+	/*
+     Optional group description
+    */
+	private String description;
 
 	private List<UUID> memberIds;
 }

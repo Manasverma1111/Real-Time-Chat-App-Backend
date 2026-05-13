@@ -82,4 +82,31 @@ public class RoomController {
 	) {
 		roomService.deleteRoom(roomId, extractUserId(authHeader));
 	}
+
+	/*
+ GET ALL PUBLIC GROUPS
+*/
+	@GetMapping("/public")
+	public List<Room> getPublicGroups(
+			@RequestHeader("Authorization") String authHeader
+	) {
+		return roomService.getPublicGroups(
+				extractUserId(authHeader)
+		);
+	}
+
+	/*
+     JOIN PUBLIC GROUP
+    */
+	@PostMapping("/{roomId}/join")
+	public void joinPublicGroup(
+			@PathVariable UUID roomId,
+			@RequestHeader("Authorization") String authHeader
+	) {
+		roomService.joinPublicGroup(
+				roomId,
+				extractUserId(authHeader)
+		);
+	}
+
 }
