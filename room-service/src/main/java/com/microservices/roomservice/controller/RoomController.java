@@ -109,4 +109,50 @@ public class RoomController {
 		);
 	}
 
+	/*
+ GET ROOM DETAILS
+*/
+	@GetMapping("/{roomId}")
+	public Room getRoomDetails(
+			@PathVariable UUID roomId,
+			@RequestHeader("Authorization") String authHeader
+	) {
+		return roomService.getRoomDetails(
+				roomId,
+				extractUserId(authHeader)
+		);
+	}
+
+	/*
+     UPDATE ROOM INFO
+    */
+	@PutMapping("/{roomId}")
+	public Room updateRoom(
+			@PathVariable UUID roomId,
+			@RequestHeader("Authorization") String authHeader,
+			@RequestBody Room request
+	) {
+		return roomService.updateRoom(
+				roomId,
+				extractUserId(authHeader),
+				request
+		);
+	}
+
+	/*
+     UPDATE GROUP AVATAR
+    */
+	@PutMapping("/{roomId}/avatar")
+	public Room updateRoomAvatar(
+			@PathVariable UUID roomId,
+			@RequestHeader("Authorization") String authHeader,
+			@RequestParam String avatarUrl
+	) {
+		return roomService.updateRoomAvatar(
+				roomId,
+				extractUserId(authHeader),
+				avatarUrl
+		);
+	}
+
 }

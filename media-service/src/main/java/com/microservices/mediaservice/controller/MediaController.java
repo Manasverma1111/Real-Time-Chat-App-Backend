@@ -53,4 +53,23 @@ public class MediaController {
 	) {
 		return mediaService.uploadFile(null, userId, file);
 	}
+
+	/*
+ GROUP AVATAR UPLOAD
+*/
+	@PostMapping("/upload/group")
+	public MediaUploadResponse uploadGroupImage(
+			@RequestParam UUID roomId,
+			@RequestParam("file") MultipartFile file
+	) {
+
+		/*
+		 senderId reused safely
+		*/
+		return mediaService.uploadFile(
+				roomId,
+				roomId,
+				file
+		);
+	}
 }

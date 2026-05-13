@@ -26,4 +26,18 @@ public interface RoomService {
 	List<Room> getPublicGroups(UUID currentUserId);
 
 	void joinPublicGroup(UUID roomId, UUID userId);
+
+	Room getRoomDetails(UUID roomId, UUID userId);
+
+	Room updateRoom(
+			UUID roomId,
+			UUID userId,
+			Room request
+	);
+
+	Room updateRoomAvatar(
+			UUID roomId,
+			UUID userId,
+			String avatarUrl
+	);
 }

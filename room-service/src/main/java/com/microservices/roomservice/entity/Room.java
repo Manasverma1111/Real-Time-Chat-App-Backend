@@ -32,19 +32,21 @@ public class Room {
     /*
      GROUP VISIBILITY:
      PUBLIC / PRIVATE
-
-     IMPORTANT:
-     Default PRIVATE to preserve old behavior
     */
     @Column(nullable = false)
     @Builder.Default
     private String visibility = "PRIVATE";
 
     /*
-     OPTIONAL GROUP DESCRIPTION
+     GROUP DESCRIPTION
     */
     @Column(length = 300)
     private String description;
+
+    /*
+     GROUP PROFILE IMAGE
+    */
+    private String avatarUrl;
 
     @Column(nullable = false)
     private UUID createdBy;
@@ -55,17 +57,32 @@ public class Room {
     @Transient
     private Integer onlineCount;
 
+    /*
+     FRONTEND DISPLAY ONLY
+    */
+    @Transient
+    private String adminName;
+
     private LocalDateTime createdAt;
+
+    /*
+     TRACK ROOM UPDATES
+    */
+    private LocalDateTime updatedAt;
 
     @PrePersist
     public void prePersist() {
-        this.createdAt = LocalDateTime.now();
 
-        /*
-         Safety fallback for old room creation flow
-        */
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+
         if (this.visibility == null || this.visibility.isBlank()) {
             this.visibility = "PRIVATE";
         }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
