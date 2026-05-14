@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface NotificationService {
 
-	Notification createNotification(UUID userId, String type, String message);
+	Notification createNotification(UUID userId, UUID roomId, String type, String message);
 
 	List<Notification> getUserNotifications(UUID userId);
 

@@ -27,25 +27,26 @@ public class NotificationConsumer {
             System.out.println("📩 RECEIVED FROM RABBIT");
             System.out.println("TARGET USER: " + msg.getSenderId());
             System.out.println("SENDER NAME: " + msg.getSenderName());
-            System.out.println("MESSAGE: " + msg.getContent());
+            System.out.println("MESSAGE:     " + msg.getContent());
+            System.out.println("ROOM:        " + msg.getRoomId());
             System.out.println("=================================");
 
             /*
-             senderId field now stores
-             TARGET USER ID
+             senderId field stores TARGET USER ID
             */
-            UUID targetUserId =
-                    UUID.fromString(
-                            msg.getSenderId()
-                    );
+            UUID targetUserId = UUID.fromString(msg.getSenderId());
+
+            /*
+             roomId for per-room badge grouping
+            */
+            UUID roomId = UUID.fromString(msg.getRoomId());
 
             String notificationMessage =
-                    msg.getSenderName()
-                            + ": "
-                            + msg.getContent();
+                    msg.getSenderName() + ": " + msg.getContent();
 
             notificationService.createNotification(
                     targetUserId,
+                    roomId,
                     "CHAT",
                     notificationMessage
             );
@@ -53,11 +54,7 @@ public class NotificationConsumer {
             System.out.println("✅ NOTIFICATION SAVED");
 
         } catch (Exception e) {
-
-            System.err.println(
-                    "❌ NOTIFICATION CONSUMER FAILED"
-            );
-
+            System.err.println("❌ NOTIFICATION CONSUMER FAILED");
             e.printStackTrace();
         }
     }

@@ -17,6 +17,12 @@ public class Notification {
 
 	private UUID userId;
 
+	/*
+     ROOM this notification belongs to.
+     Used by frontend to show per-room unread badge.
+    */
+	private UUID roomId;
+
 	private String type;
 
 	private String message;

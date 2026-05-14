@@ -20,7 +20,12 @@ public class NotificationController {
 
 	@PostMapping
 	public Notification create(@RequestBody NotificationRequest request) {
-		return service.createNotification(request.getUserId(), request.getType(), request.getMessage());
+		return service.createNotification(
+				request.getUserId(),
+				request.getRoomId(),   // now passed through
+				request.getType(),
+				request.getMessage()
+		);
 	}
 
 	@GetMapping("/{userId}")

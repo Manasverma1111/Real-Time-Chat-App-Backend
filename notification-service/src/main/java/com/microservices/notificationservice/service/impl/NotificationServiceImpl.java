@@ -19,10 +19,21 @@ public class NotificationServiceImpl implements NotificationService {
 	}
 
 	@Override
-	public Notification createNotification(UUID userId, String type, String message) {
-
+	public Notification createNotification(
+			UUID userId,
+			UUID roomId,
+			String type,
+			String message
+	) {
 		Notification notification = new Notification();
 		notification.setUserId(userId);
+
+        /*
+         SAVE roomId so frontend can group
+         unread counts per room
+        */
+		notification.setRoomId(roomId);
+
 		notification.setType(type);
 		notification.setMessage(message);
 		notification.setRead(false);
@@ -38,7 +49,8 @@ public class NotificationServiceImpl implements NotificationService {
 
 	@Override
 	public Notification markAsRead(UUID notificationId) {
-		Notification notification = repository.findById(notificationId).orElseThrow();
+		Notification notification =
+				repository.findById(notificationId).orElseThrow();
 		notification.setRead(true);
 		return repository.save(notification);
 	}
