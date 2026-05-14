@@ -218,7 +218,15 @@ public class RoomServiceImpl implements RoomService {
 
 	@Override
 	public List<RoomMemberResponse> getRoomMembers(UUID roomId, UUID userId) {
-		validateMembership(roomId, userId);
+
+    /*
+     INTERNAL SERVICE CALL (userId == null):
+     skip membership check entirely.
+     NORMAL USER CALL: validate as usual.
+    */
+		if (userId != null) {
+			validateMembership(roomId, userId);
+		}
 
 		List<RoomMember> members =
 				roomMemberRepository.findByRoomId(roomId);

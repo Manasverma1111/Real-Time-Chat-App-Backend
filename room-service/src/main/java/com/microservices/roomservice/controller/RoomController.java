@@ -21,9 +21,24 @@ public class RoomController {
 	private final JwtService jwtService;
 
 	private UUID extractUserId(String authHeader) {
-		String token = authHeader.substring(7);
-		String userId = jwtService.extractUserId(token);
-		return UUID.fromString(userId);
+
+		try {
+
+			String token = authHeader.substring(7);
+
+			String userId =
+					jwtService.extractUserId(token);
+
+			return UUID.fromString(userId);
+
+		} catch (Exception e) {
+
+		/*
+		 INTERNAL SERVICE FALLBACK
+		 used by notification flow
+		*/
+			return UUID.randomUUID();
+		}
 	}
 
 	@PostMapping
@@ -44,11 +59,26 @@ public class RoomController {
 	@GetMapping("/{roomId}/members")
 	public List<RoomMemberResponse> getRoomMembers(
 			@PathVariable UUID roomId,
-			@RequestHeader("Authorization") String authHeader
+			@RequestHeader(value = "Authorization", required = false)
+			String authHeader
 	) {
-		return roomService.getRoomMembers(roomId, extractUserId(authHeader));
-	}
 
+    /*
+     INTERNAL SERVICE CALL (no auth header):
+     pass null so service skips membership check.
+    */
+		if (authHeader == null || authHeader.isBlank()) {
+			return roomService.getRoomMembers(roomId, null);
+		}
+
+    /*
+     NORMAL USER FLOW: extract real userId.
+    */
+		return roomService.getRoomMembers(
+				roomId,
+				extractUserId(authHeader)
+		);
+	}
 	@PostMapping("/{roomId}/members/{memberId}")
 	public void addMember(
 			@PathVariable UUID roomId,

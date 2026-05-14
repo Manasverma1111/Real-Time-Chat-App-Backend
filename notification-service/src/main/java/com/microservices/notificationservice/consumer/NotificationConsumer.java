@@ -1,5 +1,6 @@
 package com.microservices.notificationservice.consumer;
 
+import com.microservices.notificationservice.config.RabbitConfig;
 import com.microservices.notificationservice.dto.ChatMessage;
 import com.microservices.notificationservice.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -15,22 +16,49 @@ public class NotificationConsumer {
     private final NotificationService notificationService;
 
     @RabbitListener(
-            queues = "notification.queue",
-            containerFactory = "rabbitListenerContainerFactory" // ✅ CRITICAL FIX
+            queues = RabbitConfig.QUEUE,
+            containerFactory = "rabbitListenerContainerFactory"
     )
     public void receive(ChatMessage msg) {
 
-        System.out.println("📩 RECEIVED FROM RABBIT: " + msg.getContent());
+        try {
 
-        UUID userId = UUID.fromString(msg.getSenderId());
+            System.out.println("=================================");
+            System.out.println("📩 RECEIVED FROM RABBIT");
+            System.out.println("TARGET USER: " + msg.getSenderId());
+            System.out.println("SENDER NAME: " + msg.getSenderName());
+            System.out.println("MESSAGE: " + msg.getContent());
+            System.out.println("=================================");
 
-        notificationService.createNotification(
-                userId,
-                "CHAT",
-                msg.getSenderName() + ": " + msg.getContent()
-        );
+            /*
+             senderId field now stores
+             TARGET USER ID
+            */
+            UUID targetUserId =
+                    UUID.fromString(
+                            msg.getSenderId()
+                    );
 
-        System.out.println("🔥 CONSUMER ACTIVE");
-        System.out.println("FULL OBJECT: " + msg);
+            String notificationMessage =
+                    msg.getSenderName()
+                            + ": "
+                            + msg.getContent();
+
+            notificationService.createNotification(
+                    targetUserId,
+                    "CHAT",
+                    notificationMessage
+            );
+
+            System.out.println("✅ NOTIFICATION SAVED");
+
+        } catch (Exception e) {
+
+            System.err.println(
+                    "❌ NOTIFICATION CONSUMER FAILED"
+            );
+
+            e.printStackTrace();
+        }
     }
 }
