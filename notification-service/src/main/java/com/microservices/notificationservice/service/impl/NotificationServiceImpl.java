@@ -54,4 +54,9 @@ public class NotificationServiceImpl implements NotificationService {
 		notification.setRead(true);
 		return repository.save(notification);
 	}
+
+	@Override
+	public void markRoomNotificationsAsRead(UUID roomId, UUID userId) {
+		repository.markRoomNotificationsAsRead(roomId, userId);
+	}
 }

@@ -37,4 +37,12 @@ public class NotificationController {
 	public Notification markAsRead(@PathVariable UUID id) {
 		return service.markAsRead(id);
 	}
+
+	@PutMapping("/room/{roomId}/read")
+	public void markRoomNotificationsAsRead(
+			@PathVariable UUID roomId,
+			@RequestParam UUID userId
+	) {
+		service.markRoomNotificationsAsRead(roomId, userId);
+	}
 }

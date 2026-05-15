@@ -155,6 +155,7 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public void markMessagesAsSeen(UUID roomId, UUID currentUserId) {
+
 		List<Message> messages =
 				messageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
 
@@ -165,6 +166,28 @@ public class MessageServiceImpl implements MessageService {
 		}
 
 		messageRepository.saveAll(messages);
+
+	/*
+	 ALSO mark notifications as read
+	 in notification-service DB.
+	*/
+		try {
+
+			String notificationUrl =
+					"http://localhost:8085/notifications/room/"
+							+ roomId
+							+ "/read?userId="
+							+ currentUserId;
+
+			restTemplate.put(notificationUrl, null);
+
+			System.out.println("✅ Notifications marked as read");
+
+		} catch (Exception e) {
+
+			System.err.println("❌ Failed to mark notifications as read");
+			e.printStackTrace();
+		}
 	}
 
 	@Override

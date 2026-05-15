@@ -12,4 +12,6 @@ public interface NotificationService {
 	List<Notification> getUserNotifications(UUID userId);
 
 	Notification markAsRead(UUID notificationId);
+
+	void markRoomNotificationsAsRead(UUID roomId, UUID userId);
 }
