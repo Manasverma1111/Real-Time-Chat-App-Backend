@@ -37,7 +37,11 @@ public class SecurityConfig {
                         .requestMatchers("/rooms", "/rooms/**").permitAll()
 
                         // Actuator
-                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers(
+                                "/actuator/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**").permitAll()
 
                         // Everything else secured
                         .anyRequest().authenticated()
