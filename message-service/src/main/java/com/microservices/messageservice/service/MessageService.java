@@ -9,8 +9,12 @@ import java.util.UUID;
 public interface MessageService {
 	Message sendMessage(UUID userId, CreateMessageRequest request);
 
-	List<Message> getMessagesByRoom(UUID roomId, UUID currentUserId);
-
+	List<Message> getMessagesByRoom(
+			UUID roomId,
+			UUID currentUserId,
+			int page,
+			int size
+	);
 	void markMessagesAsSeen(UUID roomId, UUID currentUserId);
 
 	void deleteMessageForMe(UUID messageId, UUID userId);

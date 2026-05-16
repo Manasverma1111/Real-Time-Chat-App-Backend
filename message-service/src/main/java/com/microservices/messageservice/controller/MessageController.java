@@ -32,14 +32,19 @@ public class MessageController {
 	@GetMapping
 	public List<Message> getMessagesByRoom(
 			@RequestParam UUID roomId,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "20") int size,
 			@RequestHeader("Authorization") String authHeader
 	) {
+
 		String token = authHeader.substring(7);
 		String userId = jwtService.extractUserId(token);
 
 		return messageService.getMessagesByRoom(
 				roomId,
-				UUID.fromString(userId)
+				UUID.fromString(userId),
+				page,
+				size
 		);
 	}
 

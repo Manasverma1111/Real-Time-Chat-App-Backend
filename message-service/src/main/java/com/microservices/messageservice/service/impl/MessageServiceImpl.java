@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -140,28 +143,65 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public List<Message> getMessagesByRoom(UUID roomId, UUID currentUserId) {
-		List<Message> messages =
-				messageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+	public List<Message> getMessagesByRoom(
+			UUID roomId,
+			UUID currentUserId,
+			int page,
+			int size
+	) {
 
-		return messages.stream()
-				.filter(message -> {
-					if (message.getDeletedForUsers() == null) {
-						return true;
-					}
-					return !message.getDeletedForUsers().contains(currentUserId);
-				})
-				.toList();
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<Message> messagesPage =
+				messageRepository.findByRoomIdOrderByCreatedAtDesc(
+						roomId,
+						pageable
+				);
+
+		List<Message> filteredMessages =
+				new java.util.ArrayList<>(
+						messagesPage.getContent()
+								.stream()
+								.filter(message -> {
+									if (message.getDeletedForUsers() == null) {
+										return true;
+									}
+
+									return !message.getDeletedForUsers()
+											.contains(currentUserId);
+								})
+								.toList()
+				);
+
+	/*
+	 IMPORTANT:
+	 reverse back to ASC order
+	 so frontend UI remains unchanged
+	*/
+		java.util.Collections.reverse(filteredMessages);
+
+		return filteredMessages;
 	}
 
 	@Override
 	public void markMessagesAsSeen(UUID roomId, UUID currentUserId) {
 
-		List<Message> messages =
-				messageRepository.findByRoomIdOrderByCreatedAtAsc(roomId);
+		Pageable pageable = PageRequest.of(0, 200);
+
+		Page<Message> messagesPage =
+				messageRepository.findByRoomIdOrderByCreatedAtDesc(
+						roomId,
+						pageable
+				);
+
+		List<Message> messages = messagesPage.getContent();
 
 		for (Message message : messages) {
-			if (!message.getSenderId().equals(currentUserId)) {
+
+			if (
+					!message.getSenderId().equals(currentUserId)
+							&& !Boolean.TRUE.equals(message.getSeen())
+			) {
 				message.setSeen(true);
 			}
 		}
