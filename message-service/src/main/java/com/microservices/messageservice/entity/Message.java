@@ -23,6 +23,12 @@ public class Message {
 	// NEW FIELD
 	private String senderName;
 
+	/*
+ USER PROFILE IMAGE
+*/
+	@Column(columnDefinition = "TEXT")
+	private String avatarUrl;
+
 	private UUID roomId;
 	/*
  SUPPORT:

@@ -20,4 +20,5 @@ public class CreateMessageRequest {
 	 Save username for proper message display after refresh
 	*/
 	private String senderName;
+	private String avatarUrl;
 }

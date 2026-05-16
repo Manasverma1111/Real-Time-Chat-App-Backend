@@ -8,7 +8,6 @@ public class ChatMessage {
 	private String content;
 	private String senderId;
 	private String roomId;
-
-	// NEW FIELD
 	private String senderName;
+	private String avatarUrl;
 }

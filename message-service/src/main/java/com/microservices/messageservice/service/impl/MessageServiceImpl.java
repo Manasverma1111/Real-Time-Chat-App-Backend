@@ -49,6 +49,7 @@ public class MessageServiceImpl implements MessageService {
 						? request.getSenderName()
 						: "User"
 		);
+		message.setAvatarUrl(request.getAvatarUrl());
 		message.setRoomId(request.getRoomId());
 		message.setContent(request.getContent());
 		message.setCreatedAt(LocalDateTime.now());

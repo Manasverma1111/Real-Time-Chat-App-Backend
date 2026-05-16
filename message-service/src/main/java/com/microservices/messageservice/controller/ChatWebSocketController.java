@@ -41,6 +41,7 @@ public class ChatWebSocketController {
 		 so after refresh username remains visible
 		*/
         request.setSenderName(chatMessage.getSenderName());
+        request.setAvatarUrl(chatMessage.getAvatarUrl());
 
         Message savedMessage =
                 messageService.sendMessage(
