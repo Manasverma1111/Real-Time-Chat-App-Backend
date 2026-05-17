@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public interface MessageRepository extends JpaRepository<Message, UUID> {
 
+//	findByRoomIdOrderByCreatedAtDesc() method retrieves a paginated list of messages for a specific chat room,
+//	ordered by their creation time in descending order (newest messages first).
 	Page<Message> findByRoomIdOrderByCreatedAtDesc(
 			UUID roomId,
 			Pageable pageable

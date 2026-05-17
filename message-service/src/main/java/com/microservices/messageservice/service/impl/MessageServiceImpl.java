@@ -24,11 +24,15 @@ import java.util.UUID;
 @Service
 public class MessageServiceImpl implements MessageService {
 
+//	MessageServiceImpl is a service class that implements the MessageService interface
+//	and provides the business logic for handling messages in the messaging service.
 	private final MessageRepository messageRepository;
 	private final NotificationProducer notificationProducer;
 	private final RestTemplate restTemplate;
 	private final SimpMessagingTemplate messagingTemplate;
 
+//	The constructor of the MessageServiceImpl class takes four parameters: a MessageRepository,
+//	a NotificationProducer, a RestTemplate, and a SimpMessagingTemplate.
 	public MessageServiceImpl(
 			MessageRepository messageRepository,
 			NotificationProducer notificationProducer,
@@ -41,6 +45,9 @@ public class MessageServiceImpl implements MessageService {
 		this.messagingTemplate = messagingTemplate;
 	}
 
+//	The sendMessage method is responsible for creating a new message, saving it to the database,
+//	and sending notifications to other members of the chat room.
+//	It takes a userId and a CreateMessageRequest as parameters and returns the saved Message object.
 	@Override
 	public Message sendMessage(UUID userId, CreateMessageRequest request) {
 
@@ -60,6 +67,7 @@ public class MessageServiceImpl implements MessageService {
 
 		Message savedMessage = messageRepository.save(message);
 
+//		After saving the message, the method attempts to send notifications to other members of the chat room.
 		try {
 
 			String url =
@@ -77,6 +85,7 @@ public class MessageServiceImpl implements MessageService {
 
 			List<?> members = response.getBody();
 
+//			The method iterates through the list of members and sends a notification to each member except the sender of the message.
 			if (members != null) {
 
 				for (Object obj : members) {
@@ -91,6 +100,7 @@ public class MessageServiceImpl implements MessageService {
 						continue;
 					}
 
+//					the method creates a ChatMessage object as the payload for the notification,
 					ChatMessage notificationPayload = new ChatMessage();
 					notificationPayload.setSenderId(memberUserId);
 					notificationPayload.setSenderName(savedMessage.getSenderName());
@@ -142,6 +152,8 @@ public class MessageServiceImpl implements MessageService {
 		return savedMessage;
 	}
 
+//	The getMessagesByRoom method retrieves messages for a specific chat room,
+//	applying pagination and filtering out messages that have been deleted for the current user.
 	@Override
 	public List<Message> getMessagesByRoom(
 			UUID roomId,
@@ -150,6 +162,9 @@ public class MessageServiceImpl implements MessageService {
 			int size
 	) {
 
+//		page and size parameters are used to create a Pageable object,
+//		which is then passed to the messageRepository to retrieve a paginated list of messages
+//		for the specified roomId, ordered by creation time in descending order.
 		Pageable pageable = PageRequest.of(page, size);
 
 		Page<Message> messagesPage =
@@ -158,6 +173,8 @@ public class MessageServiceImpl implements MessageService {
 						pageable
 				);
 
+//		The method then filters out messages that have been marked as deleted for the current user
+//		by checking the deletedForUsers set of each message.
 		List<Message> filteredMessages =
 				new java.util.ArrayList<>(
 						messagesPage.getContent()
@@ -183,6 +200,7 @@ public class MessageServiceImpl implements MessageService {
 		return filteredMessages;
 	}
 
+//	The markMessagesAsSeen method is responsible for marking messages in a specific chat room as seen by the current user.
 	@Override
 	public void markMessagesAsSeen(UUID roomId, UUID currentUserId) {
 
@@ -196,6 +214,7 @@ public class MessageServiceImpl implements MessageService {
 
 		List<Message> messages = messagesPage.getContent();
 
+//		The method iterates through the retrieved messages and checks if each message was sent by another user and has not been marked as seen.
 		for (Message message : messages) {
 
 			if (
@@ -231,6 +250,8 @@ public class MessageServiceImpl implements MessageService {
 		}
 	}
 
+//	The deleteMessageForMe method allows a user to mark a specific message as deleted for themselves,
+//	without affecting other users' visibility of the message.
 	@Override
 	public void deleteMessageForMe(UUID messageId, UUID userId) {
 		Message message = messageRepository.findById(messageId)
@@ -240,11 +261,13 @@ public class MessageServiceImpl implements MessageService {
 		messageRepository.save(message);
 	}
 
+//	The toggleReaction method allows a user to add or remove a reaction (emoji) to a specific message.
 	@Override
 	public void toggleReaction(UUID messageId, UUID userId, String emoji) {
 		Message message = messageRepository.findById(messageId)
 				.orElseThrow(() -> new RuntimeException("Message not found"));
 
+//		The method first checks if the reactions map of the message is null and initializes it if necessary.
 		if (message.getReactions() == null) {
 			message.setReactions(new java.util.HashMap<>());
 		}
@@ -259,6 +282,8 @@ public class MessageServiceImpl implements MessageService {
 				message.getReactions().remove(emoji);
 			}
 
+//			If the user has already reacted with the same emoji,
+//			the method removes the user's reaction from that emoji.
 		} else {
 
 			for (var entry : message.getReactions().entrySet()) {

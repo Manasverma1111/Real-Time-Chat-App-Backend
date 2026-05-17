@@ -10,6 +10,8 @@ import org.springframework.web.client.RestTemplate;
 @EnableDiscoveryClient
 public class MessageServiceApplication {
 
+//	The MessageServiceApplication class is the entry point of the Spring Boot application for the messaging service.
+
 	public static void main(String[] args) {
 		SpringApplication.run(MessageServiceApplication.class, args);
 	}
@@ -19,6 +21,8 @@ public class MessageServiceApplication {
 	 - notification member fetch
 	 - inter-service room API calls
 	*/
+//	The restTemplate method is annotated with @Bean, which means it will be managed by the Spring container
+//	and can be injected into other components of the application.
 	@Bean
 	public RestTemplate restTemplate() {
 		return new RestTemplate();

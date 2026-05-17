@@ -14,18 +14,17 @@ import java.util.UUID;
 @Table(name = "messages")
 public class Message {
 
+//	Message is a JPA entity that represents a message in the messaging service.
 	@Id
 	@GeneratedValue
 	private UUID id;
 
 	private UUID senderId;
 
-	// NEW FIELD
+//	 The senderName field is added to the Message entity to store the name of the sender of the message.
 	private String senderName;
 
-	/*
- USER PROFILE IMAGE
-*/
+// FIELD FOR AVATAR URL
 	@Column(columnDefinition = "TEXT")
 	private String avatarUrl;
 
@@ -54,6 +53,11 @@ public class Message {
 	*/
 	@ElementCollection
 	private java.util.Set<UUID> deletedForUsers = new java.util.HashSet<>();
+
+	/*
+	 NEW FIELD FOR REACTIONS
+	 Map of emoji to set of user IDs who reacted with that emoji
+	*/
 
 	@ElementCollection
 	@CollectionTable(name = "message_reactions", joinColumns = @JoinColumn(name = "message_id"))

@@ -16,9 +16,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MessageController {
 
+//	MessageController is a Spring REST controller that handles HTTP requests related to messages in a chat application.
 	private final MessageService messageService;
 	private final JwtService jwtService;
 
+//	The sendMessage method is annotated with @PostMapping,
+//	which means it will handle HTTP POST requests to the "/messages" endpoint.
 	@PostMapping
 	public Message sendMessage(@RequestHeader("Authorization") String authHeader,
 			@Valid @RequestBody CreateMessageRequest request) {
@@ -29,6 +32,8 @@ public class MessageController {
 		return messageService.sendMessage(UUID.fromString(userId), request);
 	}
 
+//	The getMessagesByRoom method is annotated with @GetMapping,
+//	which means it will handle HTTP GET requests to the "/messages" endpoint.
 	@GetMapping
 	public List<Message> getMessagesByRoom(
 			@RequestParam UUID roomId,
@@ -37,6 +42,8 @@ public class MessageController {
 			@RequestHeader("Authorization") String authHeader
 	) {
 
+//		The method takes several parameters: roomId (the ID of the chat room),
+//		page and size for pagination, and an Authorization header containing a JWT token.
 		String token = authHeader.substring(7);
 		String userId = jwtService.extractUserId(token);
 
@@ -48,9 +55,9 @@ public class MessageController {
 		);
 	}
 
-	/*
-	 NEW
-	*/
+//	The markMessagesSeen method is annotated with @PutMapping("/{roomId}/seen"),
+//	which means it will handle HTTP PUT requests to the "/messages/{roomId}/seen" endpoint,
+//	where {roomId} is a path variable representing the ID of the chat room.
 	@PutMapping("/{roomId}/seen")
 	public void markMessagesSeen(
 			@PathVariable UUID roomId,
@@ -65,6 +72,9 @@ public class MessageController {
 		);
 	}
 
+//	The deleteMessageForMe method is annotated with @PutMapping("/{messageId}/delete/me"),
+//	which means it will handle HTTP PUT requests to the "/messages/{messageId}/delete/me" endpoint,
+//	where {messageId} is a path variable representing the ID of the message to be deleted for the user.
 	@PutMapping("/{messageId}/delete/me")
 	public void deleteMessageForMe(
 			@PathVariable UUID messageId,
@@ -79,6 +89,9 @@ public class MessageController {
 		);
 	}
 
+//	The reactToMessage method is annotated with @PutMapping("/{messageId}/react"),
+//	which means it will handle HTTP PUT requests to the "/messages/{messageId}/react" endpoint,
+//	where {messageId} is a path variable representing the ID of the message to which the user wants to react.
 	@PutMapping("/{messageId}/react")
 	public void reactToMessage(
 			@PathVariable UUID messageId,

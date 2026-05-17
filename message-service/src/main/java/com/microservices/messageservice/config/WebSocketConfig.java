@@ -10,6 +10,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+//    registerStompEndpoints() method registers the STOMP endpoints for WebSocket communication.
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
 
@@ -17,12 +18,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOriginPatterns(
                         "http://localhost:4200"
                 );
-
-        // IMPORTANT:
-        // Removed .withSockJS()
-        // because frontend uses native WebSocket with brokerURL
     }
 
+//    configureMessageBroker() method configures the message broker
+//    for handling messages sent to and from WebSocket clients.
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
 
