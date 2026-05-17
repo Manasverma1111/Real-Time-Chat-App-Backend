@@ -6,9 +6,11 @@ import com.microservices.messageservice.security.JwtService;
 import com.microservices.messageservice.service.MessageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -20,7 +22,14 @@ public class MessageController {
 	private final MessageService messageService;
 	private final JwtService jwtService;
 
-//	The sendMessage method is annotated with @PostMapping,
+	/*
+    WebSocket broker — used to push seen events
+    to the sender in real time
+   */
+	private final SimpMessagingTemplate messagingTemplate;
+
+
+	//	The sendMessage method is annotated with @PostMapping,
 //	which means it will handle HTTP POST requests to the "/messages" endpoint.
 	@PostMapping
 	public Message sendMessage(@RequestHeader("Authorization") String authHeader,
@@ -69,6 +78,25 @@ public class MessageController {
 		messageService.markMessagesAsSeen(
 				roomId,
 				UUID.fromString(userId)
+		);
+
+		/*
+         BROADCAST SEEN EVENT VIA WEBSOCKET
+         Notifies all subscribers in the room that
+         messages have been read by userId.
+         Sender receives this and updates ✓ → ✓✓ in real time.
+        */
+		messagingTemplate.convertAndSend(
+				"/topic/seen/" + roomId,
+				Map.of(
+						"roomId", roomId.toString(),
+						"seenByUserId", userId
+				)
+		);
+
+		System.out.println(
+				"✅ Seen event broadcast → room: " + roomId
+						+ " | seenBy: " + userId
 		);
 	}
 
