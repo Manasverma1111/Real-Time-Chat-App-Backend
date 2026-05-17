@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public interface RoomRepository extends JpaRepository<Room, UUID> {
 
+//    findByTypeAndVisibility is a method that retrieves a list of Room entities based on their type and visibility,
     /*
      Used for Explore Groups page
     */

@@ -15,6 +15,9 @@ import java.util.UUID;
 @Builder
 public class RoomMember {
 
+//    RoomMember is an entity class that represents a member of a chat room,
+//    with fields for the member's ID, room ID, user ID, role in the room (e.g., ADMIN or MEMBER),
+//    the timestamp when the member joined the room, and the timestamp of the last time the member read messages in the room.
     @Id
     @GeneratedValue
     private UUID id;
@@ -32,6 +35,7 @@ public class RoomMember {
 
     private LocalDateTime lastReadAt;
 
+//     The prePersist() method is a lifecycle callback method that is called before the entity is persisted to the database.
     @PrePersist
     public void prePersist() {
         this.joinedAt = LocalDateTime.now();

@@ -15,6 +15,9 @@ import java.util.UUID;
 @Builder
 public class Room {
 
+//    Room is an entity class that represents a chat room in the application,
+//    with fields for the room's ID, name, type, visibility, description, avatar URL, creator's ID,
+//    member count, online count, admin name, creation timestamp, and update timestamp.
     @Id
     @GeneratedValue
     private UUID roomId;
@@ -51,6 +54,10 @@ public class Room {
     @Column(nullable = false)
     private UUID createdBy;
 
+//   TRANSIENT FIELDS FOR FRONTEND DISPLAY
+// These fields are not persisted in the database but are used to provide additional information
+// for frontend display purposes, such as the number of members in the room,
+// the number of online members, and the name of the room's administrator.
     @Transient
     private Integer memberCount;
 
@@ -70,6 +77,8 @@ public class Room {
     */
     private LocalDateTime updatedAt;
 
+//     The prePersist() method is annotated with @PrePersist,
+//     which means it will be called before the entity is persisted to the database.
     @PrePersist
     public void prePersist() {
 
@@ -81,6 +90,8 @@ public class Room {
         }
     }
 
+//    The preUpdate() method is annotated with @PreUpdate,
+//    which means it will be called before the entity is updated in the database.
     @PreUpdate
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();

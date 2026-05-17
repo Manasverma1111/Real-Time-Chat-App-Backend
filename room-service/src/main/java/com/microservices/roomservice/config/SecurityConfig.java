@@ -13,9 +13,13 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+//    SecurityConfig is a configuration class that defines the security settings for the Room Service API using Spring Security.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+//       securityFilterChain() method configures the security settings for the application,
+//       including disabling CSRF protection, enabling CORS, setting the session management policy to stateless,
+//       and defining the authorization rules for different API endpoints.
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
@@ -27,10 +31,10 @@ public class SecurityConfig {
                         // Allow browser preflight requests
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // ✅ EXPLICIT: internal member lookup by message-service
+                        // EXPLICIT: internal member lookup by message-service
                         .requestMatchers(HttpMethod.GET, "/rooms/*/members").permitAll()
 
-                        // ✅ EXPLICIT: public groups listing
+                        // EXPLICIT: public groups listing
                         .requestMatchers(HttpMethod.GET, "/rooms/public").permitAll()
 
                         // Allow all room APIs (covers POST, DELETE, PUT, GET)

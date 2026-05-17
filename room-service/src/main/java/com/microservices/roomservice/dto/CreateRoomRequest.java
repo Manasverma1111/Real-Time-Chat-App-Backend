@@ -9,6 +9,7 @@ import java.util.UUID;
 @Data
 public class CreateRoomRequest {
 
+//	 name of the room
 	@NotBlank
 	private String name;
 
