@@ -8,6 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class NotificationServiceApplication {
 
+//	main() method serves as the entry point for the Spring Boot application.
+//	It uses SpringApplication.run() to launch the application,
+//	passing in the NotificationServiceApplication class and any command-line arguments.
 	public static void main(String[] args) {
 		SpringApplication.run(NotificationServiceApplication.class, args);
 	}

@@ -13,20 +13,26 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitConfig {
 
+//    RabbitConfig is a configuration class that sets up the RabbitMQ messaging infrastructure for the notification service.
     public static final String EXCHANGE = "notification.exchange";
     public static final String QUEUE = "notification.queue";
     public static final String ROUTING_KEY = "notification.routing";
 
+//    exchange() method defines a TopicExchange bean with the name "notification.exchange".
+//    This exchange will be used to route messages based on the routing key.
     @Bean
     public TopicExchange exchange() {
         return new TopicExchange(EXCHANGE);
     }
 
+//    queue() method defines a Queue bean with the name "notification.queue".
+//    This queue will be used to receive messages related to notifications.
     @Bean
     public Queue queue() {
         return new Queue(QUEUE);
     }
 
+//    binding() method defines a Binding bean that binds the queue to the exchange using the specified routing key.
     @Bean
     public Binding binding() {
         return BindingBuilder
@@ -35,24 +41,24 @@ public class RabbitConfig {
                 .with(ROUTING_KEY);
     }
 
-    /*
-     ✅ CRITICAL FIX: JSON Converter
-    */
+//     JSON Converter
+//     The messageConverter() method defines a Jackson2JsonMessageConverter bean
+//     that will be used to convert messages to and from JSON format when sending
+//     and receiving messages through RabbitMQ.
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
 
         Jackson2JsonMessageConverter converter =
                 new Jackson2JsonMessageConverter();
 
-        // ✅ CRITICAL FIX (NO type mapper needed)
         converter.setAlwaysConvertToInferredType(true);
 
         return converter;
     }
 
-    /*
-     ✅ CRITICAL FIX: Listener factory with converter
-    */
+//     Listener factory with converter
+//     The rabbitListenerContainerFactory() method defines a SimpleRabbitListenerContainerFactory bean
+//     that configures the connection factory and sets the message converter for RabbitMQ listeners.
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
             ConnectionFactory connectionFactory) {
@@ -60,6 +66,8 @@ public class RabbitConfig {
         SimpleRabbitListenerContainerFactory factory =
                 new SimpleRabbitListenerContainerFactory();
 
+//         The connection factory is set to the provided connectionFactory parameter,
+//        and the message converter is set to the Jackson2JsonMessageConverter defined in the messageConverter() method.
         factory.setConnectionFactory(connectionFactory);
         factory.setMessageConverter(messageConverter());
 

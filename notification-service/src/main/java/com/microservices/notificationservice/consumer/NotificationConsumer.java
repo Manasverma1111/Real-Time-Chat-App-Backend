@@ -13,14 +13,20 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class NotificationConsumer {
 
+//    NotificationConsumer is a component that listens for incoming chat messages
+//    from RabbitMQ and creates notifications based on those messages.
     private final NotificationService notificationService;
 
+//    The receive() method is annotated with @RabbitListener,
+//    which indicates that it should be invoked whenever a message is received on the specified queue ("notification.queue").
     @RabbitListener(
             queues = RabbitConfig.QUEUE,
             containerFactory = "rabbitListenerContainerFactory"
     )
     public void receive(ChatMessage msg) {
 
+//        When a message is received, the method prints out the details of the message,
+//        including the target user ID, sender name, message content, and room ID.
         try {
 
             System.out.println("=================================");
@@ -31,14 +37,14 @@ public class NotificationConsumer {
             System.out.println("ROOM:        " + msg.getRoomId());
             System.out.println("=================================");
 
-            /*
-             senderId field stores TARGET USER ID
-            */
+
+//          senderId field stores TARGET USER ID
+
             UUID targetUserId = UUID.fromString(msg.getSenderId());
 
-            /*
-             roomId for per-room badge grouping
-            */
+
+//          roomId for per-room badge grouping
+
             UUID roomId = UUID.fromString(msg.getRoomId());
 
             String notificationMessage =
@@ -53,6 +59,8 @@ public class NotificationConsumer {
 
             System.out.println("✅ NOTIFICATION SAVED");
 
+//            The createNotification() method of the notificationService is called to create a new notification for the target user,
+//            using the sender's name and message content to construct the notification message.
         } catch (Exception e) {
             System.err.println("❌ NOTIFICATION CONSUMER FAILED");
             e.printStackTrace();

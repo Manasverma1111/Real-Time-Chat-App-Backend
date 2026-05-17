@@ -7,7 +7,8 @@ import java.util.UUID;
 @Data
 public class NotificationRequest {
 
-    private UUID userId;   // ✅ matches controller & service
+//    NotificationRequest is a Data Transfer Object (DTO) that represents the structure of a notification creation request.
+    private UUID userId;   // matches controller & service
     private String type;
     private String message;
     private UUID roomId;

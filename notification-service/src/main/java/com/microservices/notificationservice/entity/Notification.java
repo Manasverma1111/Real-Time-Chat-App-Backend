@@ -11,6 +11,7 @@ import java.util.UUID;
 @Table(name = "notifications")
 public class Notification {
 
+//	Notification is a JPA entity that represents a notification in the notification service.
 	@Id
 	@GeneratedValue
 	private UUID id;

@@ -11,10 +11,11 @@ import java.util.UUID;
 
 public interface NotificationRepository extends JpaRepository<Notification, UUID> {
 
+//	findByUserIdOrderByCreatedAtDesc() method retrieves a list of notifications
+//	for a specific user based on the user ID provided as a parameter.
 	List<Notification> findByUserIdOrderByCreatedAtDesc(UUID userId);
 
 	/*
-	 WHATSAPP-LIKE:
 	 Mark all notifications of a room as read
 	 for the current user.
 	*/
@@ -27,5 +28,9 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
         AND n.userId = :userId
         AND n.isRead = false
     """)
+
+//   markRoomNotificationsAsRead() method updates the isRead field to true for all notifications
+//   that belong to a specific chat room and are associated with a given user ID,
+//   effectively marking them as read.
 	void markRoomNotificationsAsRead(UUID roomId, UUID userId);
 }
