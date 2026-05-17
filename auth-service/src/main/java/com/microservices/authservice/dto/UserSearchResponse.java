@@ -14,4 +14,12 @@ public class UserSearchResponse {
     private String fullName;
     private String avatarUrl;
     private UserStatus status;
+
+    /*
+    Added so profile viewer modal can display
+    bio, email and role when clicking user avatars
+   */
+    private String bio;
+    private String email;
+    private String role;
 }
