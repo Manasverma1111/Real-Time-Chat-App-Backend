@@ -21,7 +21,9 @@ public class SecurityConfig {
 								"/swagger-ui/**",
 								"/swagger-ui.html",
 								"/v3/api-docs/**").permitAll()
-						.requestMatchers("/messages/**").permitAll().anyRequest().authenticated())
+						.requestMatchers("/messages/**").permitAll()
+						.requestMatchers("/internal/**").permitAll()
+						.anyRequest().authenticated())
 				.formLogin(form -> form.disable()).httpBasic(httpBasic -> httpBasic.disable());
 
 		return http.build();
