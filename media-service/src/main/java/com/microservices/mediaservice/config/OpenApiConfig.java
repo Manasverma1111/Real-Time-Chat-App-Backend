@@ -12,13 +12,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
+    // Configure Swagger/OpenAPI documentation
     @Bean
     public OpenAPI customOpenAPI() {
 
+        // Security scheme name used for JWT authentication
         final String securitySchemeName = "bearerAuth";
 
         return new OpenAPI()
 
+                // API metadata
                 .info(new Info()
                         .title("Media Service API")
                         .version("1.0")
@@ -26,11 +29,13 @@ public class OpenApiConfig {
                         .contact(new Contact()
                                 .name("Manas Verma")))
 
+                // Apply JWT security globally
                 .addSecurityItem(
                         new SecurityRequirement()
                                 .addList(securitySchemeName)
                 )
 
+                // Define JWT bearer authentication scheme
                 .components(
                         new Components()
                                 .addSecuritySchemes(

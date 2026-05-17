@@ -14,6 +14,7 @@ import java.util.UUID;
 @Table(name = "media_files")
 public class MediaFile {
 
+//	The MediaFile class is a JPA entity that represents a media file uploaded to the system.
 	@Id
 	@GeneratedValue
 	private UUID id;

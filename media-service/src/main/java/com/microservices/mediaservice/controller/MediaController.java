@@ -14,12 +14,16 @@ import java.util.UUID;
 @RequestMapping("/media")
 public class MediaController {
 
+//	The MediaController class is a REST controller that handles HTTP requests related to media file management.
 	private final MediaService mediaService;
 
+//	The constructor of the MediaController class takes a MediaService instance
+//	as a parameter and assigns it to the mediaService field.
 	public MediaController(MediaService mediaService) {
 		this.mediaService = mediaService;
 	}
 
+//	The uploadFile method is mapped to the POST /media/upload endpoint and is responsible for handling file uploads.
 	// Upload media file
 	@PostMapping("/upload")
 	public MediaUploadResponse uploadFile(
@@ -36,6 +40,8 @@ public class MediaController {
 		return mediaService.getMediaByRoom(roomId);
 	}
 
+//	The generatePreviewUrl method is mapped to the GET /media/preview endpoint
+//	and generates a pre-signed URL for previewing a media file based on the provided file name.
 	@GetMapping("/preview")
 	public String generatePreviewUrl(
 			@RequestParam String fileName
@@ -46,6 +52,8 @@ public class MediaController {
 		);
 	}
 
+//	The uploadProfileImage method is mapped to the POST /media/upload/profile endpoint
+//	and is responsible for handling profile image uploads for users.
 	@PostMapping("/upload/profile")
 	public MediaUploadResponse uploadProfileImage(
 			@RequestParam UUID userId,
@@ -54,9 +62,8 @@ public class MediaController {
 		return mediaService.uploadFile(null, userId, file);
 	}
 
-	/*
- GROUP AVATAR UPLOAD
-*/
+//	The uploadGroupImage method is mapped to the POST /media/upload/group endpoint
+//	and is responsible for handling group image uploads for chat rooms.
 	@PostMapping("/upload/group")
 	public MediaUploadResponse uploadGroupImage(
 			@RequestParam UUID roomId,

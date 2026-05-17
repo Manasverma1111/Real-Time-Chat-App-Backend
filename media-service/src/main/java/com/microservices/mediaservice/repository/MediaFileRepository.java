@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public interface MediaFileRepository extends JpaRepository<MediaFile, UUID> {
 
-	// Fetch media files by roomId sorted by latest first
+//  Fetch media files by roomId sorted by latest first
+//	The findByRoomIdOrderByUploadedAtDesc method is a custom query method defined in the MediaFileRepository interface.
 	List<MediaFile> findByRoomIdOrderByUploadedAtDesc(UUID roomId);
 }

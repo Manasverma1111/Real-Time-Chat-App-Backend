@@ -24,6 +24,9 @@ import java.util.UUID;
 @Service
 public class MediaServiceImpl implements MediaService {
 
+//	The MediaServiceImpl class is a service implementation that provides methods for handling media file
+//	uploads, retrieval, and generating pre-signed URLs for media files stored in AWS S3.
+//	It interacts with the MediaFileRepository for database operations and uses the S3Client and S3Presigner for AWS S3 interactions.
 	private final MediaFileRepository mediaFileRepository;
 	private final S3Client s3Client;
 
@@ -35,6 +38,8 @@ public class MediaServiceImpl implements MediaService {
 	@Value("${aws.s3.base-url}")
 	private String baseUrl;
 
+//	The constructor of the MediaServiceImpl class takes instances of MediaFileRepository, S3Client,
+//	and S3Presigner as parameters and assigns them to the corresponding fields for use in the service methods.
 	public MediaServiceImpl(
 			MediaFileRepository mediaFileRepository,
 			S3Client s3Client,
@@ -45,6 +50,8 @@ public class MediaServiceImpl implements MediaService {
 		this.s3Presigner = s3Presigner;
 	}
 
+//	The uploadFile method handles the process of uploading a media file to AWS S3,
+//	saving its metadata to the database,
 	@Override
 	public MediaUploadResponse uploadFile(
 			UUID roomId,
@@ -116,6 +123,8 @@ public class MediaServiceImpl implements MediaService {
 		}
 	}
 
+//	The getMediaByRoom method retrieves a list of media files associated with a specific chat room,
+//	sorted by the upload timestamp in descending order.
 	@Override
 	public List<MediaFile> getMediaByRoom(UUID roomId) {
 
@@ -123,21 +132,26 @@ public class MediaServiceImpl implements MediaService {
 				.findByRoomIdOrderByUploadedAtDesc(roomId);
 	}
 
+//	The generatePresignedUrl method generates a pre-signed URL for a media file stored in AWS S3
+//	based on the provided file name.
 	@Override
 	public String generatePresignedUrl(String fileName) {
 
+//		The GetObjectRequest is built using the bucket name and the file name to specify which object in S3 we want to access.
 		GetObjectRequest getObjectRequest =
 				GetObjectRequest.builder()
 						.bucket(bucketName)
 						.key(fileName)
 						.build();
 
+//		The GetObjectPresignRequest is built using the GetObjectRequest and a specified signature duration of 30 minutes.
 		GetObjectPresignRequest presignRequest =
 				GetObjectPresignRequest.builder()
 						.signatureDuration(Duration.ofMinutes(30))
 						.getObjectRequest(getObjectRequest)
 						.build();
 
+//		The S3Presigner is used to generate a PresignedGetObjectRequest based on the GetObjectPresignRequest,
 		PresignedGetObjectRequest presignedRequest =
 				s3Presigner.presignGetObject(
 						presignRequest

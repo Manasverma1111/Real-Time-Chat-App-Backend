@@ -9,6 +9,8 @@ import java.util.UUID;
 //@AllArgsConstructor
 public class MediaUploadResponse {
 
+//	The MediaUploadResponse class is a Data Transfer Object (DTO)
+//	that represents the response returned after a media file is uploaded.
 	public MediaUploadResponse(UUID id, UUID roomId, UUID senderId, String fileName, String fileType, String filePath, LocalDateTime uploadedAt) {
 		this.id = id;
 		this.roomId = roomId;
@@ -19,6 +21,8 @@ public class MediaUploadResponse {
 		this.uploadedAt = uploadedAt;
 	}
 
+//	The class contains fields for the media file ID, associated room ID, uploader user ID,
+//	original file name, MIME type, file storage path, and upload timestamp.
 	// Media file ID
 	private UUID id;
 
