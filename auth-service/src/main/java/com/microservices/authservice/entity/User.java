@@ -21,6 +21,10 @@ public class User {
 //    @GeneratedValue
 //    private UUID userId;
 
+//    Using UUID as the primary key for the User entity,
+//    with a generation strategy of UUID and a column definition that specifies it as a CHAR(36) type
+//    to ensure proper storage and retrieval of UUID values in the database.
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @JdbcTypeCode(SqlTypes.CHAR)
@@ -65,6 +69,7 @@ public class User {
     @Column(nullable = false)
     private GlobalRole role;
 
+//    The prePersist method is a lifecycle callback that is executed before the entity is persisted to the database.
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();

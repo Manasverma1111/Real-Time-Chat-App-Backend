@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenApiConfig {
 
+//    custom OpenAPI configuration to include JWT Bearer token authentication in Swagger UI
     @Bean
     public OpenAPI customOpenAPI() {
 

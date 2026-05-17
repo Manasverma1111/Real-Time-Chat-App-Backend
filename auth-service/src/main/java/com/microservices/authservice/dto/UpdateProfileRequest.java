@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class UpdateProfileRequest {
 
+//	This DTO represents the request payload for updating a user's profile information,
 	@NotBlank(message = "Full name is required")
 	private String fullName;
 

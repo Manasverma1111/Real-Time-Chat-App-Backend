@@ -11,6 +11,8 @@ import java.util.UUID;
 @Data
 @Builder
 public class UserProfileResponse {
+
+//	This DTO encapsulates the response data for user profile information,
 	private UUID userId;
 	private String username;
 	private String email;

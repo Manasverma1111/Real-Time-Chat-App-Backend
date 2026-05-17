@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class RegisterRequest {
 
+//    This DTO represents the request payload for user registration,
     @NotBlank(message = "Full name is required")
     private String fullName;
 

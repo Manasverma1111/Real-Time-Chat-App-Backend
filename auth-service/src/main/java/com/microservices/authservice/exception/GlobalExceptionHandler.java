@@ -11,6 +11,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+//    This class is annotated with @RestControllerAdvice,
+//    which allows it to handle exceptions globally across the entire application.
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, String>> handleBadCredentials(
             BadCredentialsException ex
@@ -22,6 +24,8 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+//    This method handles IllegalArgumentException,
+//    returning a 400 Bad Request status with a message extracted from the exception.
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgument(
             IllegalArgumentException ex
@@ -33,6 +37,7 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+//    This method handles RuntimeException,
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntime(
             RuntimeException ex

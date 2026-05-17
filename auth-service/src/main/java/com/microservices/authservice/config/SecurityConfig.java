@@ -23,6 +23,9 @@ public class SecurityConfig {
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 	private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
+//	Configures the security filter chain for the application,
+//	defining which endpoints are publicly accessible and which require authentication,
+//	as well as setting up session management and integrating JWT authentication and OAuth2 login handling.
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -47,11 +50,15 @@ public class SecurityConfig {
 		return http.build();
 	}
 
+//	Defines a PasswordEncoder bean using BCrypt hashing algorithm for securely encoding user passwords.
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
+//	Defines an AuthenticationManager bean that retrieves the authentication manager
+//	from the provided AuthenticationConfiguration, allowing it to be used for authentication processes
+//	in the application.
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();

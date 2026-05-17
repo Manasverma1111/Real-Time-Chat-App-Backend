@@ -19,10 +19,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
+//	This class implements the AuthService interface,
+//	providing concrete implementations for user authentication and profile management functionalities.
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
 
+//	The register() method handles user registration by validating the uniqueness of email and username,
+//	creating a new User entity, saving it to the database, and generating a JWT token for the newly registered user.
 	@Override
 	public AuthResponse register(RegisterRequest request) {
 
@@ -62,6 +66,9 @@ public class AuthServiceImpl implements AuthService {
 				.build();
 	}
 
+//	The login() method handles user authentication by verifying the provided email and password against the stored user data.
+//	It also includes a critical fix to mark the user as ONLINE upon successful login,
+//	ensuring that the user's status is accurately reflected in the system.
 	@Override
 	public AuthResponse login(LoginRequest request) {
 
@@ -104,6 +111,8 @@ public class AuthServiceImpl implements AuthService {
 				.build();
 	}
 
+//	The validateToken() method checks the validity of a given JWT token using the JwtService,
+//	ensuring that only authenticated users can access protected resources in the application.
 	@Override
 	public boolean validateToken(String token) {
 		return jwtService.isTokenValid(token);
@@ -133,6 +142,8 @@ public class AuthServiceImpl implements AuthService {
 				.build();
 	}
 
+//	The updateProfile() method allows users to update their profile information such as full name, avatar URL, and bio.
+//	It retrieves the user based on the provided email, updates the relevant fields, saves the changes to the database,
 	@Override
 	public UserProfileResponse updateProfile(
 			String email,
@@ -162,10 +173,12 @@ public class AuthServiceImpl implements AuthService {
 				.isActive(updatedUser.getIsActive())
 				.lastSeenAt(updatedUser.getLastSeenAt())
 				.createdAt(updatedUser.getCreatedAt())
-				.role(updatedUser.getRole().name()) // ✅ ADD THIS
+				.role(updatedUser.getRole().name())
 				.build();
 	}
 
+//	The changePassword() method enables users to change their password by verifying the current password and updating it with a new one.
+//	It ensures that the current password provided by the user matches the stored password hash before allowing the update,
 	@Override
 	public void changePassword(
 			String email,
@@ -191,6 +204,9 @@ public class AuthServiceImpl implements AuthService {
 		userRepository.save(user);
 	}
 
+//	The searchUsers() method allows users to search for other users based on a keyword that matches their username.
+//	It retrieves a list of users whose usernames contain the specified keyword (case-insensitive)
+//	and maps them to a UserSearchResponse DTO for returning the search results.
 	@Override
 	public List<UserSearchResponse> searchUsers(String keyword) {
 
@@ -207,6 +223,9 @@ public class AuthServiceImpl implements AuthService {
 				.toList();
 	}
 
+//	The updateStatus() method allows users to update their online status (e.g., ONLINE, OFFLINE, AWAY).
+//	It retrieves the user based on the provided email, updates the status field, saves the changes to the database,
+//	and returns the updated user profile information in a UserProfileResponse DTO.
 	@Override
 	public UserProfileResponse updateStatus(
 			String email,
@@ -237,6 +256,9 @@ public class AuthServiceImpl implements AuthService {
 				.build();
 	}
 
+//	The getUserById() method retrieves a user's profile information based on their unique user ID (UUID).
+//	It fetches the user from the database using the user ID
+//	and returns the relevant profile information in a UserSearchResponse DTO.
 	@Override
 	public UserSearchResponse getUserById(UUID userId) {
 
@@ -257,6 +279,8 @@ public class AuthServiceImpl implements AuthService {
 				.build();
 	}
 
+//	The deleteUser() method allows for the deletion of a user account based on their unique user ID (UUID).
+//	It retrieves the user from the database using the user ID and deletes the user entity from the database.
 	@Override
 	public void deleteUser(UUID userId) {
 		User user = userRepository.findByUserId(userId)
@@ -265,7 +289,7 @@ public class AuthServiceImpl implements AuthService {
 		userRepository.delete(user); // simple hard delete (safe for now)
 	}
 
-	// ✅ NEW: Used ONLY for SUPER_ADMIN dashboard (includes role)
+	// NEW: Used ONLY for SUPER_ADMIN dashboard (includes role)
 	@Override
 	public List<UserProfileResponse> getAllUsersForAdmin() {
 		return userRepository.findAll()
@@ -282,7 +306,7 @@ public class AuthServiceImpl implements AuthService {
 						.isActive(user.getIsActive())
 						.lastSeenAt(user.getLastSeenAt())
 						.createdAt(user.getCreatedAt())
-						.role(user.getRole().name()) // ✅ CRITICAL FIX
+						.role(user.getRole().name())
 						.build())
 				.toList();
 	}

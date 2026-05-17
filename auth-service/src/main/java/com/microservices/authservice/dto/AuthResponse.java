@@ -11,6 +11,7 @@ import java.util.UUID;
 @Builder
 public class AuthResponse {
 
+//    This DTO encapsulates the response data for authentication operations,
     private String token;
     private UUID userId;
     private String username;

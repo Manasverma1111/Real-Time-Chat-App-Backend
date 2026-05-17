@@ -9,6 +9,10 @@ import java.util.UUID;
 @Data
 @Builder
 public class UserSearchResponse {
+
+//    This DTO represents the response data for user search results,
+//    containing basic user information such as ID, username, full name, avatar URL, status, bio, email, and role.
+//    It is designed to provide enough information for displaying user profiles in search results or profile viewer modals.
     private UUID userId;
     private String username;
     private String fullName;

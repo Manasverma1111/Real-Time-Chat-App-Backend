@@ -26,16 +26,22 @@ public class AuthResource {
 	private final TokenBlacklistService tokenBlacklistService;
 	private final JwtService jwtService;
 
+//	Endpoints for user registration, login, logout, token validation, profile management,
+//	user search, and admin operations
 	@PostMapping("/register")
 	public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
 		return authService.register(request);
 	}
 
+//	Handles user login by validating credentials and returning an authentication response
+//	containing a JWT token and user details.
 	@PostMapping("/login")
 	public AuthResponse login(@Valid @RequestBody LoginRequest request) {
 		return authService.login(request);
 	}
 
+//	Handles user logout by blacklisting the JWT token to prevent further use
+//	and updating the user's status to offline.
 	@PostMapping("/logout")
 	public Map<String, String> logout(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
 
@@ -51,7 +57,7 @@ public class AuthResource {
 			}
 		}
 
-		// ✅ SET USER OFFLINE
+		// SET USER OFFLINE
 		if (userDetails != null) {
 			UpdateStatusRequest req = new UpdateStatusRequest();
 			req.setStatus(UserStatus.OFFLINE);
@@ -65,22 +71,30 @@ public class AuthResource {
 		return Map.of("message", "Logout successful");
 	}
 
+//	Validates the provided JWT token and returns a response indicating whether the token is valid or not.
+
 	@GetMapping("/validate")
 	public Map<String, Boolean> validateToken(@RequestParam String token) {
 		return Map.of("valid", authService.validateToken(token));
 	}
 
+//	Retrieves the profile information of the currently authenticated user
+//	based on their username extracted from the security context,
 	@GetMapping("/me")
 	public UserProfileResponse getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
 		return authService.getCurrentUser(userDetails.getUsername());
 	}
 
+//	Allows the authenticated user to update their profile information such as full name,
+//	avatar URL, and bio by providing a request body with the updated details.
 	@PutMapping("/profile")
 	public UserProfileResponse updateProfile(@AuthenticationPrincipal CustomUserDetails userDetails,
 											 @Valid @RequestBody UpdateProfileRequest request) {
 		return authService.updateProfile(userDetails.getUsername(), request);
 	}
 
+//	Enables the authenticated user to change their password
+//	by providing the current password and the new password in the request body.
 	@PutMapping("/password")
 	public Map<String, String> changePassword(@AuthenticationPrincipal CustomUserDetails userDetails,
 											  @Valid @RequestBody ChangePasswordRequest request) {
@@ -88,6 +102,7 @@ public class AuthResource {
 		return Map.of("message", "Password changed successfully");
 	}
 
+//	Allows users to search for other users by providing a keyword,
 	@GetMapping("/search")
 	public List<UserSearchResponse> searchUsers(@RequestParam String keyword) {
 		return authService.searchUsers(keyword);
@@ -104,18 +119,23 @@ USED BY ROOM SERVICE TO SHOW USERNAME IN MEMBERS MODAL
 		return authService.getUserById(userId);
 	}
 
+//	Allows the authenticated user to update their online status (e.g., online, offline, away)
 	@PutMapping("/status")
 	public UserProfileResponse updateStatus(@AuthenticationPrincipal CustomUserDetails userDetails,
 											@Valid @RequestBody UpdateStatusRequest request) {
 		return authService.updateStatus(userDetails.getUsername(), request);
 	}
 
+//	Provides administrative endpoints for super admins to manage users,
+//	including retrieving a list of all users and deleting specific users by their ID.
 	@PreAuthorize("hasRole('SUPER_ADMIN')")
 	@GetMapping("/super-admin/users")
 	public List<UserProfileResponse> getAllUsers() {
 		return authService.getAllUsersForAdmin(); // ✅ FIXED
 	}
 
+//	Allows a super admin to delete a user by their ID,
+//	which involves removing the user from the database and returning a success message upon completion.
 	@PreAuthorize("hasRole('SUPER_ADMIN')")
 	@DeleteMapping("/super-admin/user/{userId}")
 	public Map<String, String> deleteUser(@PathVariable UUID userId) {

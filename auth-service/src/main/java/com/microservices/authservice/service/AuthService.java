@@ -7,6 +7,9 @@ import java.util.UUID;
 
 public interface AuthService {
 
+//	This interface defines the contract for the authentication service,
+//	including methods for user registration, login, token validation,
+//	profile management, user search, and administrative functions.
 	AuthResponse register(RegisterRequest request);
 
 	AuthResponse login(LoginRequest request);
