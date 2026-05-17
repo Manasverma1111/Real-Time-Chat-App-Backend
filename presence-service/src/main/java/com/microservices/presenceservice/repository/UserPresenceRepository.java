@@ -6,4 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.UUID;
 
 public interface UserPresenceRepository extends JpaRepository<UserPresence, UUID> {
+
+//    UserPresenceRepository is a repository interface that extends JpaRepository,
+//    providing CRUD operations for the UserPresence entity,
 }

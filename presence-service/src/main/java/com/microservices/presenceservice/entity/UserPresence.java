@@ -15,6 +15,9 @@ import java.util.UUID;
 @Table(name = "user_presence")
 public class UserPresence {
 
+//	UserPresence is an entity class that represents the presence information of a user,
+//	including their unique identifier (userId), presence status (status),
+//	and the last time they were seen online (lastSeen).
 	@Id
 	private UUID userId;
 
