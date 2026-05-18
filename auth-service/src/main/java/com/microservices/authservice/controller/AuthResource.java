@@ -34,7 +34,8 @@ public class AuthResource {
 	}
 
 //	Handles user login by validating credentials and returning an authentication response
-//	containing a JWT token and user details.
+//	containing a JWT token and user details,
+//	and updating the user's status to offline.
 	@PostMapping("/login")
 	public AuthResponse login(@Valid @RequestBody LoginRequest request) {
 		return authService.login(request);
@@ -42,52 +43,52 @@ public class AuthResource {
 
 //	Handles user logout by blacklisting the JWT token to prevent further use
 //	and updating the user's status to offline.
-@PostMapping("/logout")
-public Map<String, String> logout(
-		HttpServletRequest request,
-		@AuthenticationPrincipal CustomUserDetails userDetails
-) {
-	String authHeader = request.getHeader("Authorization");
-	String token = null;
+	@PostMapping("/logout")
+	public Map<String, String> logout(
+			HttpServletRequest request,
+			@AuthenticationPrincipal CustomUserDetails userDetails
+	) {
+		String authHeader = request.getHeader("Authorization");
+		String token = null;
 
-	if (authHeader != null && authHeader.startsWith("Bearer ")) {
-		token = authHeader.substring(7);
+		if (authHeader != null && authHeader.startsWith("Bearer ")) {
+			token = authHeader.substring(7);
 
-		long expiry = jwtService.getRemainingValidity(token);
-		if (expiry > 0) {
-			tokenBlacklistService.blacklistToken(token, expiry);
+			long expiry = jwtService.getRemainingValidity(token);
+			if (expiry > 0) {
+				tokenBlacklistService.blacklistToken(token, expiry);
+			}
 		}
-	}
 
-	String email = null;
+		String email = null;
 
-	if (userDetails != null) {
-		email = userDetails.getUsername();
-		System.out.println("✅ Logout via userDetails: " + email);
-	} else if (token != null) {
-		try {
-			email = jwtService.extractEmail(token);
-			System.out.println("✅ Logout via token extraction: " + email);
-		} catch (Exception e) {
-			System.err.println("❌ Token extraction failed: " + e.getMessage());
+		if (userDetails != null) {
+			email = userDetails.getUsername();
+			System.out.println(" Logout via userDetails: " + email);
+		} else if (token != null) {
+			try {
+				email = jwtService.extractEmail(token);
+				System.out.println(" Logout via token extraction: " + email);
+			} catch (Exception e) {
+				System.err.println(" Token extraction failed: " + e.getMessage());
+			}
+		} else {
+			System.err.println(" No token and no userDetails on logout");
 		}
-	} else {
-		System.err.println("❌ No token and no userDetails on logout");
+
+		if (email != null) {
+			UpdateStatusRequest req = new UpdateStatusRequest();
+			req.setStatus(UserStatus.OFFLINE);
+			authService.updateStatus(email, req);
+			System.out.println(" Status set to OFFLINE for: " + email);
+		} else {
+			System.err.println(" Could not determine user email — status NOT updated");
+		}
+
+		return Map.of("message", "Logout successful");
 	}
 
-	if (email != null) {
-		UpdateStatusRequest req = new UpdateStatusRequest();
-		req.setStatus(UserStatus.OFFLINE);
-		authService.updateStatus(email, req);
-		System.out.println("✅ Status set to OFFLINE for: " + email);
-	} else {
-		System.err.println("❌ Could not determine user email — status NOT updated");
-	}
-
-	return Map.of("message", "Logout successful");
-}
 //	Validates the provided JWT token and returns a response indicating whether the token is valid or not.
-
 	@GetMapping("/validate")
 	public Map<String, Boolean> validateToken(@RequestParam String token) {
 		return Map.of("valid", authService.validateToken(token));
@@ -143,10 +144,11 @@ USED BY ROOM SERVICE TO SHOW USERNAME IN MEMBERS MODAL
 
 //	Provides administrative endpoints for super admins to manage users,
 //	including retrieving a list of all users and deleting specific users by their ID.
+//	the @PreAuthorize annotation to restrict access to these endpoints to users with the SUPER_ADMIN role.
 	@PreAuthorize("hasRole('SUPER_ADMIN')")
 	@GetMapping("/super-admin/users")
 	public List<UserProfileResponse> getAllUsers() {
-		return authService.getAllUsersForAdmin(); // ✅ FIXED
+		return authService.getAllUsersForAdmin();
 	}
 
 //	Allows a super admin to delete a user by their ID,
