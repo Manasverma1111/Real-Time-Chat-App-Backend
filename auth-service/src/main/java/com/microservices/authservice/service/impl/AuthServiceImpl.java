@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,8 +25,15 @@ public class AuthServiceImpl implements AuthService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtService jwtService;
+	/*
+     RestTemplate for calling presence-service
+     when user logs in or out, so WebSocket
+     broadcast fires and all UIs update in real time.
+    */
+	private final RestTemplate restTemplate;
 
-//	The register() method handles user registration by validating the uniqueness of email and username,
+
+	//	The register() method handles user registration by validating the uniqueness of email and username,
 //	creating a new User entity, saving it to the database, and generating a JWT token for the newly registered user.
 	@Override
 	public AuthResponse register(RegisterRequest request) {
@@ -93,6 +101,12 @@ public class AuthServiceImpl implements AuthService {
 		// FIX: mark user ONLINE
 		user.setStatus(UserStatus.ONLINE);
 		userRepository.save(user);
+
+		 /*
+         NOTIFY PRESENCE-SERVICE ON LOGIN
+         so WebSocket broadcast fires immediately
+        */
+		notifyPresence(user.getUserId(), "online");
 
 		String token = jwtService.generateToken(
 				user.getUserId(),
@@ -241,6 +255,18 @@ public class AuthServiceImpl implements AuthService {
 
 		User updatedUser = userRepository.save(user);
 
+		/*
+         CRITICAL FIX:
+         Notify presence-service so it calls message-service
+         which broadcasts via WebSocket to all frontends.
+         Without this, logout never triggers a real-time update.
+        */
+		String endpoint = request.getStatus() == UserStatus.ONLINE
+				? "online"
+				: "offline";
+
+		notifyPresence(updatedUser.getUserId(), endpoint);
+
 		return UserProfileResponse.builder()
 				.userId(updatedUser.getUserId())
 				.username(updatedUser.getUsername())
@@ -310,4 +336,28 @@ public class AuthServiceImpl implements AuthService {
 						.build())
 				.toList();
 	}
+
+
+	/*
+     INTERNAL HELPER
+     Calls presence-service to mark user online/offline.
+     Presence-service then calls message-service /internal/presence
+     which broadcasts to /topic/presence via WebSocket.
+     Fire-and-forget — never breaks auth flow.
+    */
+	private void notifyPresence(UUID userId, String endpoint) {
+		try {
+			restTemplate.postForObject(
+					"http://localhost:8084/presence/" + endpoint + "/" + userId,
+					null,
+					Void.class
+			);
+		} catch (Exception e) {
+			System.err.println(
+					" Could not notify presence-service: " + e.getMessage()
+			);
+		}
+	}
+
+
 }

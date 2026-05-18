@@ -245,41 +245,48 @@ public class RoomServiceImpl implements RoomService {
 //	getRoomMembers() method retrieves a list of members for a specified room,
 //	including their usernames by making calls to the user service,
 //	and performs membership validation to ensure that only members of the room can access the member list.
-	@Override
-	public List<RoomMemberResponse> getRoomMembers(UUID roomId, UUID userId) {
+@Override
+public List<RoomMemberResponse> getRoomMembers(UUID roomId, UUID userId) {
 
-    /*
-     INTERNAL SERVICE CALL (userId == null):
-     skip membership check entirely.
-     NORMAL USER CALL: validate as usual.
-    */
-		if (userId != null) {
-			validateMembership(roomId, userId);
-		}
+	if (userId != null) {
+		validateMembership(roomId, userId);
+	}
 
-		List<RoomMember> members =
-				roomMemberRepository.findByRoomId(roomId);
+	List<RoomMember> members = roomMemberRepository.findByRoomId(roomId);
 
-		return members.stream()
-				.map(member -> {
-					String url =
-							"http://localhost:8081/auth/user/" + member.getUserId();
+	return members.stream()
+			.map(member -> {
+				String url =
+						"http://localhost:8081/auth/user/" + member.getUserId();
 
+				String username = "Deleted User";
+
+				try {
 					Map<String, Object> user =
 							restTemplate.getForObject(url, Map.class);
+					if (user != null) {
+						username = String.valueOf(user.get("username"));
+					}
+				} catch (Exception e) {
+                    /*
+                     User was deleted from auth-service
+                     but still exists as a room member.
+                     Show fallback name instead of crashing.
+                    */
+					System.err.println(
+							"⚠️ Could not fetch user " + member.getUserId()
+									+ ": " + e.getMessage()
+					);
+				}
 
-					String username = user != null
-							? String.valueOf(user.get("username"))
-							: "Unknown User";
-
-					return RoomMemberResponse.builder()
-							.userId(member.getUserId())
-							.username(username)
-							.role(member.getRole())
-							.build();
-				})
-				.toList();
-	}
+				return RoomMemberResponse.builder()
+						.userId(member.getUserId())
+						.username(username)
+						.role(member.getRole())
+						.build();
+			})
+			.toList();
+}
 
 //	addMember() method allows an admin member to add a new member to a specified room,
 //	performing checks to ensure that only admins can add members and that the member being added is not already a member of the room.

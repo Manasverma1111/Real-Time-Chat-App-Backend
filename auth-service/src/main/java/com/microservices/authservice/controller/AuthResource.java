@@ -42,35 +42,50 @@ public class AuthResource {
 
 //	Handles user logout by blacklisting the JWT token to prevent further use
 //	and updating the user's status to offline.
-	@PostMapping("/logout")
-	public Map<String, String> logout(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails userDetails) {
+@PostMapping("/logout")
+public Map<String, String> logout(
+		HttpServletRequest request,
+		@AuthenticationPrincipal CustomUserDetails userDetails
+) {
+	String authHeader = request.getHeader("Authorization");
+	String token = null;
 
-		String authHeader = request.getHeader("Authorization");
+	if (authHeader != null && authHeader.startsWith("Bearer ")) {
+		token = authHeader.substring(7);
 
-		if (authHeader != null && authHeader.startsWith("Bearer ")) {
-			String token = authHeader.substring(7);
-
-			long expiry = jwtService.getRemainingValidity(token);
-
-			if (expiry > 0) {
-				tokenBlacklistService.blacklistToken(token, expiry);
-			}
+		long expiry = jwtService.getRemainingValidity(token);
+		if (expiry > 0) {
+			tokenBlacklistService.blacklistToken(token, expiry);
 		}
-
-		// SET USER OFFLINE
-		if (userDetails != null) {
-			UpdateStatusRequest req = new UpdateStatusRequest();
-			req.setStatus(UserStatus.OFFLINE);
-
-			authService.updateStatus(
-					userDetails.getUsername(),
-					req
-			);
-		}
-
-		return Map.of("message", "Logout successful");
 	}
 
+	String email = null;
+
+	if (userDetails != null) {
+		email = userDetails.getUsername();
+		System.out.println("✅ Logout via userDetails: " + email);
+	} else if (token != null) {
+		try {
+			email = jwtService.extractEmail(token);
+			System.out.println("✅ Logout via token extraction: " + email);
+		} catch (Exception e) {
+			System.err.println("❌ Token extraction failed: " + e.getMessage());
+		}
+	} else {
+		System.err.println("❌ No token and no userDetails on logout");
+	}
+
+	if (email != null) {
+		UpdateStatusRequest req = new UpdateStatusRequest();
+		req.setStatus(UserStatus.OFFLINE);
+		authService.updateStatus(email, req);
+		System.out.println("✅ Status set to OFFLINE for: " + email);
+	} else {
+		System.err.println("❌ Could not determine user email — status NOT updated");
+	}
+
+	return Map.of("message", "Logout successful");
+}
 //	Validates the provided JWT token and returns a response indicating whether the token is valid or not.
 
 	@GetMapping("/validate")
